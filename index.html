@@ -5,36 +5,18 @@
 		<script src="src/gen.js"></script>
 		<script src="src/peg.js"></script>
 		<style id="theme"></style>
-		<style>
-
-body{
-	background: #16191B;
-	color: #A9BACB;
-	margin:0em;
-	font-size: 12px;}
-
-::selection {
-	background: #61295A;
-	color: #95F7D1;}
-
-canvas, .minimap{
-	image-rendering: pixelated;
-	background: rgba(0,0,0,0.3);
-	border-left: 6px solid #132C46;
-	position: fixed;
-	right: 0px; top: 0px;
-	padding: 2px;}
-
-		</style>
+		<link rel="stylesheet" type="text/css" href="css/style.css">
 	</head>
 	<body>
-		<pre id="code"></pre>
+		<div id="main"></div>
+		<div id="background">
+			<pre id="code"></pre>
+		</div>
 		<script>
 
-request("data/dark.json", 
-	function(s){gen_theme(s)})
+request("data/dark.json", function(s){gen_theme(s)})
+//request("data/test.clj", function(s){mount(s);})
 
-request("data/test.clj", 
-	function(s){mount(s);})
-
-		</script></body></html>
+		</script>
+		<script src="src/deck.js"></script>
+		</body></html>

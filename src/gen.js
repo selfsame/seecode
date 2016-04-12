@@ -123,7 +123,7 @@ function draw_token(o){
 		ctx.fillStyle = (theme[o["tag"]] || "rgba(0,0,0,1.0)");
 		ctx.fillRect(x1, y1*2, x2 - x1, 1);
 	} else {
-		console.log(o["tag"])
+		
 	}
 
 }
@@ -146,10 +146,11 @@ function walk(o, fn){
 		return "" + o;
 	}}
 
-function mount(s){
+function mount(s, target){
 	dims = src_dims(s);
 	canvas = new_canvas(dims[0], dims[1]);
 	ctx = canvas.getContext("2d")
-	document.body.querySelector("#code").innerHTML = walk(peg.parse(s));
-	document.body.appendChild(canvas);}
+	target.innerHTML = walk(peg.parse(s));
+	target.parentElement.appendChild(canvas);
+	return target;}
 
