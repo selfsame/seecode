@@ -44,11 +44,31 @@ function request(url, fn){
   httpRequest.open('GET', url)
   httpRequest.send()}
 
+function obj_to_css(k, o){
+	var res = "";
+	locals(o).map(function(g){
+		res += "\t"+g+": "+o[g]+";\n";})
+	return "\n  ."+k+" {\n" + res + "}";}
+
 function gen_theme(s){
 	theme = JSON.parse(s);
+	theme_matches = {};
 	var css = ""
 	locals(theme).map(function(k){
-		css += "\n  ."+k+" {color:"+theme[k]+";}";})
+		if (typeof(theme[k]) == "object") {
+			if (theme[k]["cascade"] == true) {
+				var idx = 0
+				theme[k]["stack"].map(function(v){
+					var s = Array(idx+2).join(theme[k]["selector"]+" ");
+					css += "\n"+s+"{color:"+theme[k]["stack"][idx]+";}";
+					idx += 1;})}
+			else if (theme[k]["matches"]) {
+				theme_matches[k] = theme[k]["matches"];
+				css += obj_to_css(k + " .symbol", theme[k]["style"])}
+			else {
+				css += obj_to_css(k, theme[k])}}
+		else {
+			css += "\n  ."+k+" {color:"+theme[k]+";}";}})
 	document.querySelector("#theme").innerText = css;}
 
 record = {
@@ -70,7 +90,6 @@ record = {
 	"string": {
 		"open": {"char": "\"", "tag": "<atom class='string'>"},
 		"shut": {"char": "\"", "tag": "</atom>"}},
-
 	"keyword": {
 		"open": {"char": ":", "tag": "<atom class='keyword'>"},
 		"shut": {"char": "", "tag": "</atom>"}},
@@ -90,8 +109,38 @@ record = {
 		"open": {"char": "::", "tag": "<atom class='qualified-kw'>"},
 		"shut": {"char": "", "tag": "</atom>"}},
 	"comment": {
-		"open": {"char": "", "tag": "<atom class='comment'>"},
-		"shut": {"char": "", "tag": "</atom>"}}}
+		"open": {"char": ";", "tag": "<atom class='comment'>"},
+		"shut": {"char": "", "tag": "</atom>"}},
+	"quote": {
+		"open": {"char": "'", "tag": "<atom class='quote'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"backtick": {
+		"open": {"char": "`", "tag": "<atom class='backtick'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"tilde": {
+		"open": {"char": "~", "tag": "<atom class='tilde'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"deref": {
+		"open": {"char": "@", "tag": "<atom class='deref'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"variadic": {
+		"open": {"char": "&", "tag": "<atom class='variadic'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"var-quote": {
+		"open": {"char": "#'", "tag": "<atom class='var-quote'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"meta": {
+		"open": {"char": "^", "tag": "<atom class='meta'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"ignore": {
+		"open": {"char": "#_", "tag": "<atom class='ignore'>"},
+		"shut": {"char": "", "tag": "</atom>"}}, 
+	"regex": {
+		"open": {"char": "#\"", "tag": "<atom class='regex'>"},
+		"shut": {"char": "\"", "tag": "</atom>"}},
+	"instance": {
+		"open": {"char": "#<", "tag": "<atom class='instance'>"},
+		"shut": {"char": ">", "tag": "</atom>"}}}
 
 function wrap(type, content){
 	return ""+record[type]["open"]["tag"]+record[type]["open"]["char"]+
@@ -100,7 +149,9 @@ function wrap(type, content){
 function is(col, x){return (col.indexOf(x) != -1)}
 
 wrapped = ["list", "vector", "map", "set", "lambda", "keyword", "string",
-	"symbol", "int", "float", "illegal", "qualified-kw", "comment"];
+	"symbol", "int", "float", "illegal", "qualified-kw", "comment",
+	"quote", "backtick", "tilde", "deref", "variadic", "var-quote", "meta", "ignore", "regex",
+	"instance"];
 
 form = ["list", "vector", "map", "set", "lambda", "string"]
 
@@ -114,37 +165,32 @@ function draw_token(o){
 		y2 = o["meta"][1][1];
 		ctx.fillStyle = theme[o["tag"]] || "rgba(0,0,0,1.0)";
 		ctx.fillRect(x1, y1*2, 1, 1);
-		ctx.fillRect(x2, y2*2, 1, 1);
-	} else if (is(atom, o["tag"])){
+		ctx.fillRect(x2, y2*2, 1, 1);} 
+	else if (is(atom, o["tag"])){
 		x1 = o["meta"][0][2];
 		y1 = o["meta"][0][1];
 		x2 = o["meta"][1][2];
 		y2 = o["meta"][1][1];
 		ctx.fillStyle = (theme[o["tag"]] || "rgba(0,0,0,1.0)");
-		ctx.fillRect(x1, y1*2, x2 - x1, 1);
-	} else {
-		
-	}
-
-}
+		ctx.fillRect(x1, y1*2, x2 - x1, 1);} 
+	else {}}
 
 function walk(o, fn){
-	if (o instanceof Array){
-		return o.map(function(m){return walk(m, fn)}).join("");
-	} else if (typeof(o) == "object"){
+	if (o instanceof Array) {
+		return o.map(function(m){return walk(m, fn)}).join("");} 
+	else if (typeof(o) == "object") {
 		if (o["meta"]) {draw_token(o);}
-		if (is(wrapped, o["tag"])){
-			return wrap(o["tag"] , walk(o["value"]));
-		} else {
+		if (is(wrapped, o["tag"])) {
+			if (o["tag"] == "symbol") {
+				if (is(theme_matches["core"], o["value"])){
+					return "<span class='core'>"+wrap(o["tag"] , walk(o["value"]))+"</span>"}}
+			return wrap(o["tag"] , walk(o["value"]));}
+		else {
 			var res = null;
-			switch (o["tag"]){
-				default: res = walk(o["value"]);
-			}
-			return res;
-		}
-	} else {
-		return "" + o;
-	}}
+			switch (o["tag"]) {
+				default: res = walk(o["value"]);}
+			return res;}} 
+	else {return "" + o;}}
 
 function mount(s, target){
 	dims = src_dims(s);

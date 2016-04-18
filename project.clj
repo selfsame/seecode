@@ -24,6 +24,6 @@
                :parallel-build true
                :optimizations :none
                :pretty-print false}}]}
-  :figwheel {:server-port 3449
+  :figwheel {:server-port 8889
              :css-dirs ["css"]
              :reload-clj-files {:clj true :cljc false}})
