@@ -1,7 +1,5 @@
 /target/
-/resources/public/js/out/
-/resources/public/js/prod-out/
-/js/
+src/out/
 
 pom.xml
 
@@ -11,3 +9,4 @@ pom.xml
 *.bat
 *.idea
 *.sublime-workspace
+*.bat
