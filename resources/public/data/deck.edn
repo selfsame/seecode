@@ -1,8 +1,8 @@
 [[{:header "make tools"
-   :gradient ["#643964" "#041610"]}
+   :gradient ["#9C0909" "#032117"]}
+  {:code "data/hard_core.clj"}
   {:code "data/show.clj"}
-  {:iframe "data/html/libgdx.html"}
-  {:code "data/show.clj"}]
+  {:iframe "data/html/libgdx.html"}]
  [{:header "next project"
    :gradient ["#641313" "#504E18"]}
   {:iframe "data/html/3.html"}

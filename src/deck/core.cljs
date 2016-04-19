@@ -50,10 +50,10 @@
 
     (cond 
       (:iframe data)
-      ($/append (first root) ($ (str "<slide class='code' id='row" y "'><iframe src='" (:iframe data) "'></iframe></slide>")))
+      ($/append (first root) ($ (str "<slide id='row" y "'><iframe src='" (:iframe data) "'></iframe></slide>")))
       (:code data)
       (js/request (:code data) 
-        #(let [slide ($ (str "<slide id='row" y "'><pre></pre></slide>"))]
+        #(let [slide ($ (str "<slide class='code' id='row" y "'><pre></pre></slide>"))]
           (js/mount % (first ($/find (first slide) "pre")))
           (.appendChild  (first ($ (str "#col" x)))  (first slide))))
       :else

@@ -87,11 +87,17 @@ record = {
 	"lambda": {
 		"open": {"char": "#(", "tag": "<exp class='lambda'>"},
 		"shut": {"char": ")", "tag": "</exp>"}},
+	"char": {
+		"open": {"char": "\\", "tag": "<atom class='char'>"},
+		"shut": {"char": "", "tag": "</atom>"}},
 	"string": {
 		"open": {"char": "\"", "tag": "<atom class='string'>"},
 		"shut": {"char": "\"", "tag": "</atom>"}},
 	"keyword": {
 		"open": {"char": ":", "tag": "<atom class='keyword'>"},
+		"shut": {"char": "", "tag": "</atom>"}},
+	"ns": {
+		"open": {"char": "", "tag": "<atom class='ns'>"},
 		"shut": {"char": "", "tag": "</atom>"}},
 	"symbol": {
 		"open": {"char": "", "tag": "<atom class='symbol'>"},
@@ -148,43 +154,57 @@ function wrap(type, content){
 
 function is(col, x){return (col.indexOf(x) != -1)}
 
-wrapped = ["list", "vector", "map", "set", "lambda", "keyword", "string",
-	"symbol", "int", "float", "illegal", "qualified-kw", "comment",
-	"quote", "backtick", "tilde", "deref", "variadic", "var-quote", "meta", "ignore", "regex",
-	"instance"];
+wrapped = ["list", "vector", "map", "set", "lambda", "keyword", "string", "ns", "symbol", "int", "float", 
+	"illegal", "qualified-kw", "comment", "char", "quote", "backtick", "tilde", "deref", "variadic", "var-quote", 
+	"meta", "ignore", "regex", "instance"];
 
-form = ["list", "vector", "map", "set", "lambda", "string"]
+form = ["list", "vector", "map", "set", "lambda"]
 
-atom = ["keyword", "symbol", "int", "float", "illegal", "qualified-kw", "comment"]
+atom = ["keyword", "symbol", "int", "float", "illegal", "qualified-kw", "comment", "illegal", "string", "regex"]
 
-function draw_token(o){
+function draw_token(o, color){
+	if (color) {
+		fill = color}
+	else {
+		var rule = theme[o["tag"]];
+		var fill = rule || "silver";
+		if (typeof(rule) == "object") {fill = rule["color"] || fill};
+		if (is(form, o["tag"])) {fill = theme["rainbows"]["stack"][stack.length-1] || fill;}}
+	ctx.fillStyle = fill;
 	if (is(form, o["tag"])){
 		x1 = o["meta"][0][2];
 		y1 = o["meta"][0][1];
 		x2 = o["meta"][1][2];
 		y2 = o["meta"][1][1];
-		ctx.fillStyle = theme[o["tag"]] || "rgba(0,0,0,1.0)";
 		ctx.fillRect(x1, y1*2, 1, 1);
-		ctx.fillRect(x2, y2*2, 1, 1);} 
+		ctx.fillRect(x2-1, y2*2, 1, 1);} 
 	else if (is(atom, o["tag"])){
 		x1 = o["meta"][0][2];
 		y1 = o["meta"][0][1];
 		x2 = o["meta"][1][2];
 		y2 = o["meta"][1][1];
-		ctx.fillStyle = (theme[o["tag"]] || "rgba(0,0,0,1.0)");
-		ctx.fillRect(x1, y1*2, x2 - x1, 1);} 
+		ctx.fillRect(x1, y1*2, x2 - x1, (y2 - y1) * 2 + 1);} 
 	else {}}
+
+stackpush = function(o){if (is(form, o["tag"])) {stack.push(o["tag"])}}
+stackpop 	= function(o){if (is(form, o["tag"])) {stack.pop()}}
 
 function walk(o, fn){
 	if (o instanceof Array) {
 		return o.map(function(m){return walk(m, fn)}).join("");} 
 	else if (typeof(o) == "object") {
-		if (o["meta"]) {draw_token(o);}
+		stackpush(o);
+		ns_match = is(theme_matches["core"], o["value"]);
+		if (o["meta"]) {draw_token(o, ns_match ? "#FF8600" : false);}
 		if (is(wrapped, o["tag"])) {
 			if (o["tag"] == "symbol") {
-				if (is(theme_matches["core"], o["value"])){
-					return "<span class='core'>"+wrap(o["tag"] , walk(o["value"]))+"</span>"}}
-			return wrap(o["tag"] , walk(o["value"]));}
+				if (ns_match){
+					var res = "<span class='core'>"+wrap(o["tag"] , walk(o["value"]))+"</span>";
+					stackpop(o);
+					return res;}}
+			var res = wrap(o["tag"] , walk(o["value"]));
+			stackpop(o);
+			return res;}
 		else {
 			var res = null;
 			switch (o["tag"]) {
@@ -196,6 +216,7 @@ function mount(s, target){
 	dims = src_dims(s);
 	canvas = new_canvas(dims[0], dims[1]);
 	ctx = canvas.getContext("2d")
+	stack = [];
 	target.innerHTML = walk(peg.parse(s));
 	target.parentElement.appendChild(canvas);
 	return target;}

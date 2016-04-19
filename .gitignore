@@ -1,5 +1,5 @@
 /target/
-src/out/
+resources/public/js/out/
 
 pom.xml
 

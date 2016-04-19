@@ -7,14 +7,16 @@
 
 Start = Form+
 
-Form = seq:(Collection/Atom/__/Illegal) 							{return seq}
+Form = seq:(Collection/Atom/__) 											{return seq}
 
-Collection = Illegal/List/Vector/Map/Set/Lambda
+Collection = List/Vector/Map/Set/Lambda/IllegalExp
 
-Atom = String/Char/Number/NS/Special/Symbol/QualifiedKey/Keyword/Comment 
+Atom = String/Char/Number/NS/Special/IllegalAtom/Symbol/QualifiedKey/Keyword/Comment
 
-Illegal = val:(("{" _ (Collection/Atom) _ "}")/
-	"/" / (Symbol "/") / ("/" Symbol ))									{return token(location(), "illegal", val)}
+IllegalExp = val:(("{" _ (Collection/Atom/_) _ "}") / 
+	("(" Form*)/("[" Form*)/("{" seq:Form*))						{return token(location(), "illegal", text())}
+
+IllegalAtom= val:((Symbol "/" _) / (_ "/" Symbol))		{return token(location(), "illegal", text())}
 
 Pair = val:(_ Form _ Form _) 													{return val}
 
@@ -46,20 +48,19 @@ QualifiedKey  = "::" val:Symbol  											{return token(location(), "qualified
 String = "\"" str:("\\\"" / [^\"]  )* "\""  					{return token(location(), "string", str.join(""))}
 Comment = ";" str:[^\n\r]*  													{return token(location(), "comment", str.join(""))}
 
-NS = ns:Symbol "\/" sym:Symbol  											{return token(location(), "ns", [ns.value, sym.value])}
-Symbol = f:ReadChar r:(ReadChar/NoLead)*   						{return token(location(), "symbol", f + r.join(""))}
+NS = ns:Symbol "/" sym:Symbol  												{return token(location(), "ns", [ns, "/", sym])}
+Symbol = f:(ReadChar / "/") r:(ReadChar/NoLead)*   		{return token(location(), "symbol", f + r.join(""))}
 Char = "\\" char:[^ \t\n\r]  													{return token(location(), "char", char)}
-
 
 Number = Ratio/Float/Integer
 
-Ratio = f:Integer "/" l:Integer 											{return token(location(), "ratio", [f.value, l.value])}
+Ratio = f:Integer "/" l:Integer 											{return token(location(), "ratio", [f, "/", l])}
 Float = first:[0-9]+ "." rest:[0-9]+ 									{return token(location(), "float", parseFloat(text(),10))}
 Integer = first:[0-9]rest:[0-9]* 											{return token(location(), "int", parseInt(text(),10))}
 
 
-__ "whitespace" = val:[ \t\n\r]+ 											{return token(location(), "_", val.join(""))}
-_ "whitespace" = val:[ \t\n\r]* 											{return token(location(), "_", val.join(""))}
+__ "whitespace" = val:[ \t\n\r,]+ 											{return token(location(), "_", val.join(""))}
+_ "whitespace" = val:[ \t\n\r,]* 											{return token(location(), "_", val.join(""))}
 
 
 NoLead  = "'"/[\#\%\:0-9]

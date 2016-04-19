@@ -1,3 +1,10 @@
+@font-face {
+	font-family: 'fira_coderegular';
+	src: url('./FiraCode-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body{
 	background: #16191B;
 	color: #A9BACB;
@@ -32,6 +39,7 @@ slide{
 	width:96%;
 	height:32%;
 	padding:3%;
+	overflow:hidden;
 }
 
 slide iframe{
@@ -57,11 +65,16 @@ slide.frame *{
 	color: #95F7D1;}
 
 slide.code{
-	padding:7em;
+	padding:0em;
 }
 
 slide pre{
-	font-size:1.8em;
+	font-family: 'fira_coderegular',  monospace;
+	text-rendering: optimizeLegibility;
+	font-variant-ligatures: contextual;
+	-webkit-font-feature-settings: "liga" on, "calt" on;
+    -webkit-font-smoothing: antialiased;
+	font-size:1.5em;
 	position:relative;
 	width:80%;
 	float:right;
@@ -75,13 +88,12 @@ slide pre{
 }
 
 canvas, .minimap{
-	/*transform-origin: 25% -25%;*/
-	/*transform:scale(2.0,2.0);*/
-	transform-origin: left top;
+	transform-origin: 0% 0%;
 	transform:scale(2.0); 
 	image-rendering: pixelated;
 	background: rgba(0,0,0,0.3);
-	border-left: 6px solid #132C46;
+	border-left: 6px solid black;
 	position: relative;
 	float:left;
-	padding: 2px;}
+	padding: 2px;
+	margin-left: -2%;}
