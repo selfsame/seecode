@@ -31,6 +31,7 @@
 
 
 (defonce state (atom {
+  :graph {}
   :deck []
   :cursor []}))
 
@@ -84,6 +85,14 @@
 (defn mount [idx]
   ($/detach ($ "background"))
   (mapv #(mount-column %) (range (count (:deck @state)))))
+
+(defn populate! []
+  (dorun
+    (for [x (range (count (:deck @state)))]
+      (dorun 
+        (for [y (range (count (get (:deck @state) x)))
+              :let [m (get-in @state [:deck x y])]]
+          (swap! state update :graph #(conj % {[x y] (or m {})})))))))
 
 (defn on-resize [e]
   (get-screen))
