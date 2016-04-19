@@ -1,9 +1,37 @@
-[[{:header "make tools"
-   :gradient ["#9C0909" "#032117"]}
-  {:code "data/hard_core.clj"}
-  {:code "data/show.clj"}
-  {:iframe "data/html/libgdx.html"}]
- [{:header "next project"
-   :gradient ["#641313" "#504E18"]}
-  {:iframe "data/html/3.html"}
-  {:iframe "data/html/libgdx2.html"}]]
+[[{:gradient ["#552748" "#032117"]
+    :md "
+# clojure game-dev!
+
+## _Joseph Parker_  ![me](img/me.png)
+
+> * selfsamegames.com
+> * twitter.com/jplur_
+> * `github.com/selfsame`
+> * `selfsame.itch.io`"}
+
+  {:code "data/show.clj"}]
+ [{:gradient ["#black" "#552748"]
+   :md "
+# ec.core 
+
+## entity/component system for js|cljs
+
+> `github.com/selfsame/ec`"}
+  {:iframe "http://selfsamegames.com/placemakers"}]
+ [{:gradient ["#552748" "#504E18"]
+   :md "
+# arcadia
+
+### *`@nasser` & `@timsgardner`*
+
+## clojure CLR inside Unity
+> * complete clj environment / file|ns loading / repl
+> * clj compilation
+> * build and ship to desktop platforms
+
+`github.com/Arcadia`"}
+   {:code "data/hard_core.clj"}
+   {:iframe "http://selfsamegames.com/gifs/tweens/"}
+  {:iframe "data/html/3.html"}]
+  [{:gradient ["#032117" "#552748"]
+    :iframe "http://selfsamegames.com/lonelydungeon/compare.html"}]]

@@ -56,6 +56,10 @@
         #(let [slide ($ (str "<slide class='code' id='row" y "'><pre></pre></slide>"))]
           (js/mount % (first ($/find (first slide) "pre")))
           (.appendChild  (first ($ (str "#col" x)))  (first slide))))
+      (:md data)
+      (let [slide ($ (str "<slide class='frame markdown' id='row" y "'>" 
+              (.toHTML js/markdown (:md data)) "</slide>"))]
+          ($/append  (first root)  (first slide)))
       :else
       (let [frame ($ (str "<slide class='frame' id='row" y "'></slide>"))]
         (cond 
