@@ -217,7 +217,7 @@ function mount(s, target){
 	canvas = new_canvas(dims[0], dims[1]);
 	ctx = canvas.getContext("2d")
 	stack = [];
-	target.innerHTML = walk(peg.parse(s));
-	target.parentElement.appendChild(canvas);
+	target.innerHTML = "<pre class='clj'>"+walk(peg.parse(s))+"</pre>";
+	target.appendChild(canvas_png(canvas));
 	return target;}
 

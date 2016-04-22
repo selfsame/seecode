@@ -1,24 +1,17 @@
 <!DOCTYPE html>
-<html>
-	<head>
-		<title>see code</title>
-		<script src="js/gen.js"></script>
-		<script src="js/peg.js"></script>
-		<script src="js/markdown.min.js"></script>
-		<style id="theme"></style>
-		<link rel="stylesheet" type="text/css" href="css/style.css">
-	</head>
-	<body>
-		<div id="main"></div>
-		<div id="background">
-			<pre id="code"></pre>
-		</div>
-		<script>
-
-request("data/dark.json", function(s){gen_theme(s)})
-//request("data/test.clj", function(s){mount(s);})
-
-		</script>
-		<script src="js/main.js"></script>
-	</body>
-</html> 
+<html><head><title>see code</title>
+	<script src="js/gen.js"></script>
+	<script src="js/peg.js"></script>
+	<script src="js/markdown.min.js"></script>
+	<style id="theme"></style>
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+</head><body>
+	<div id="main"></div>
+	<div id="background">
+		<pre id="code"></pre>
+	</div>
+	<script>
+		request("data/dark.json", function(s){gen_theme(s)})
+	</script>
+	<script src="js/main.js"></script>
+</body></html> 
