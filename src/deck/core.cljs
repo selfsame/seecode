@@ -66,6 +66,7 @@
   (let [main (first ($ "#main"))
         slide (:dom m)]
     (mapv #(style! slide %1 (str (* %2 100) "%")) [:left :top] [x y])
+    (when (:zoom m) (style! slide :zoom (str (:zoom m))))
     (.appendChild main slide)))
 
 (defn unmount [])
@@ -91,6 +92,7 @@
         (class! (->slide k :dom) :markdown)
         (set! (.-innerHTML (->slide k :dom))
           (.toHTML js/markdown (or (:value m) s)))
+        (mapv #(set! (.-innerHTML %) (js/cljhtml (.-innerText %))) ($/find (->slide k :dom) "code"))
         (mount [k m])))))
 
 
@@ -114,9 +116,16 @@
   (mapv load-resource (-> @state :graph)))
 
 (defn on-resize [e]
-  (get-screen))
+  (let [[sx sy] (get-screen)
+        desired (/ sx 1400)
+        ratio (/ sy sx)]
+    (when (< desired 1.0)
+      (style! (first ($ "html")) :zoom (str desired)))
+    (inject-css "view-ratio"
+      (str "slide{padding:0em " (- (* ( - 1 ratio) 50) 10) "%;}"))
+    [desired ratio (- (* ( - 1 ratio) 50) 10)]))
 
-(def dirmap {:left [1 0] :right [-1 0] :up [0 -1] :down [0 1] :- 0.075 :+ 1.0})
+(def dirmap {:left [1 0] :right [-1 0] :up [0 -1] :down [0 1] :- 0.12 :+ 1.0 :z- -0.03 :z+ 0.03})
 
 (defn neighbors [[a b]]
   (for [v [[0 0][-1 0][1 0][0 1][0 -1]]] (mapv + [a b] v)))
@@ -125,27 +134,38 @@
   (mapv #(when-let [slide (->slide % :dom)] (f slide)) (neighbors k)))
 
 (defn navigate! [k]
-  (update-neighbors (:cursor @state) #(-class! % :near))
-  (if (#{:- :+} k)
-    (swap! state update :scale #(dirmap k))
-    (swap! state update :cursor 
-      #(let [pos (mapv - % (dirmap k))]
-        (if (->slide pos) 
-          (do (-class! (->slide % :dom) :cursor)
-              (class! (->slide pos :dom) :cursor)
-              pos) %))))
-  (update-neighbors (:cursor @state) #(class! % :near) )
+  (let []
+    (cond (#{:- :+} k)
+      (do (js/setTimeout #(({:- class! :+ -class!} k) (first ($ "#main")) "overview") 20)
+          (swap! state update :scale #(dirmap k)))
+      (#{:z- :z+} k)
+      (let [zoom (.. (->slide (:cursor @state) :dom) -style -zoom)]
+        (style! (->slide (:cursor @state) :dom) :zoom 
+          (str (+ (js/parseFloat (get {"" 1} zoom zoom)) (dirmap k)))))
+      :else
+      (do (update-neighbors (:cursor @state) #(-class! % :near))
+          (swap! state update :cursor 
+            #(let [pos (mapv - % (dirmap k))]
+              (if (->slide pos) 
+                (do (-class! (->slide % :dom) :cursor)
+                    (class! (->slide pos :dom) :cursor)
+                    pos) %)))
+          (update-neighbors (:cursor @state) #(class! % :near))
+          (if (->slide (:cursor @state) :img) 
+            (image-ratio (first ($/find (->slide (:cursor @state) :dom) "img"))))))
 
-  (if (->slide (:cursor @state) :img) 
-    (image-ratio (first ($/find (->slide (:cursor @state) :dom) "img"))))
-
-  (style! (first ($ "#main")) :transform 
-    (str  "scale(" (:scale @state)") "
-      "translate(" (apply str (interpose "," (map #(str (* % 100) "%") (mapv * (:cursor @state) [-1 -1]))))")")))
 
 
+    (style! (first ($ "#main")) :transform 
+      (str  
+        "scale(" (:scale @state) ")"
+        "translate(" (apply str (interpose "," (map #(str (* % 100) "%") (mapv * (:cursor @state) [-1 -1])))) ") "
+        ))))
 
-(def keymap {37 :left 39 :right 40 :up 38 :down 33 :- 34 :+})
+
+
+(def keymap {37 :left 39 :right 40 :up 38 :down 33 :- 34 :+ 
+  107 :z+ 109 :z-})
 
 (defn on-keydown [e]
   (j/log (.-keyCode e))
@@ -175,7 +195,7 @@
 
 
 (def DECK [
-[ { :md "title.md"}]
+[ { :md "title.md" :zoom 1.1}]
 
 [{ :value "#cljs" :md "ec.md"}
  { :value "#onlyone" :md "ec.md"}]
@@ -183,7 +203,8 @@
 [{ :value "#libGDX" :md "ec.md"}]
 
 [{ :md "arcadia.md"}
- {:code "code/hard_core.clj"}]
+ ;{:code "code/hard_core.clj"}
+ ]
 
 [{:md "arcadia2.md"}
 {:img "data/img/arcadia/center-stairs.jpg"}
@@ -206,7 +227,13 @@
 
 { :value "#whale" :md "ec.md"}]
 
-[{ :value "#tween.core" :md "ec.md"}]
+;TODO TWEEN
+[{:md "tween1.md"}
+ {:md "tween-demo.md"}
+ {:md "tween2.md"}
+ {:md "tween3.md"}
+ ;{:code "code/tween_core.clj"}
+ ]
 
 [{ :value "#dual-snake" :md "ec.md"}
   { :img "data/html/gifs/1.gif"}

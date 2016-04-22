@@ -24,24 +24,34 @@ body{
 }
 
 slide{
+    transition: zoom 0.2s;
 	position:absolute;
 	display:block;
 	box-sizing:border-box;
 	width:100%;
 	height:100%;
 	padding:3%;
-	border:1em solid yellow;
 	overflow:hidden;
 }
 
+#main.overview slide{
+	border: 2em solid rgba(255,255,255,0.2);
+	background:none;
+}
+
+/*#main.overview slide > * > * > *{display:none;}*/
+
+slide.near {
+	outline:  none;
+}
+
 slide{
-	padding:0em 4em;
-	border: 0.5em solid gray;}
+	padding:0em 4em;}
 
 slide.img{
 	padding:2em;
 	border:none;
-	border-bottom: 1em solid black;
+	
 	display:flex;
 	flex-direction:row;
 	flex-flow:wrap;
@@ -75,11 +85,15 @@ slide.img.gif{
 
 slide.markdown{
 	font-size:2.5em;
-	border: 0.5em dashed rgba(255, 255, 255, 0.32);
 	font-family:verdana;
 	color:white;}
 
-slide.frame.markdown > *{
+slide.frame.markdown {
+	margin:0.5em 0em;
+}
+
+slide.markdown p,
+slide.markdown blockquote{
 	margin:0.5em 0em;
 }
 
@@ -87,25 +101,69 @@ slide.markdown h1, slide.markdown h2, slide.markdown h3{
 	margin-top:0.8em;
 	text-align:center;
 	font-family:verdana;
-	text-shadow: 0.1em 0.1em 0.1em rgba(0,0,0,0.6); 
 }
 
 slide.markdown h1{color:yellow; font-size:3em;}
 slide.markdown h2{color:cyan;}
 slide.markdown h3{color:lime;}
 
-slide.markdown img{vertical-align: middle;}
+slide.markdown li{
+	margin-bottom:0.3em;
+}
+
+slide.markdown code{
+	    font-family: consolas, 'fira_coderegular', monospace;
+    background: rgba(0,0,0,0.5);
+    padding: 0em 0.2em;
+    border-radius: 0.2em;
+
+    font-size: 0.8em;
+    line-height: 1.4em;
+}
+
+slide.markdown pre code{
+	    display: block;
+	        padding: 0.5em;
+}
 
 slide.markdown blockquote{
-	margin: 0em 0em 0em 2em;
-    background: rgba(0,0,0,0.5);
-    padding: 0.1em 0em 0.1em 2em;
+	margin: 0em 0em 0em 0em;
+    background: rgba(0,0,0,0.2);
+    padding: 0.2em 1em;
     border-radius: 0.5em;
+    margin-bottom:0.5em;
 }
 
 
 slide.markdown h1 img{
 	max-width:100%;
+}
+
+slide.markdown p img{
+	margin:2% 0% 2%;
+	width:44%;
+}
+
+slide.markdown img{vertical-align: middle;}
+
+slide.markdown hr {
+	border-style:none;
+	display: none;
+width:0em;
+float:left;}
+
+
+slide.markdown hr + *{
+	box-sizing:border-box;
+	display:inline-block;
+	float:left;
+	width:48%;
+}
+slide.markdown hr + * + * {
+	box-sizing:border-box;
+	display:inline-block;
+	float:right;
+	width:48%;
 }
 
 
@@ -128,39 +186,118 @@ slide.code{
 }
 
 slide pre{
-	font-family: 'fira_coderegular',  monospace;
-	text-rendering: optimizeLegibility;
-	font-variant-ligatures: contextual;
-	-webkit-font-feature-settings: "liga" on, "calt" on;
+    font-family: consolas, 'fira_coderegular', monospace;
+    text-rendering: optimizeLegibility;
+    font-variant-ligatures: contextual;
+    -webkit-font-feature-settings: "liga" on, "calt" on;
     -webkit-font-smoothing: antialiased;
-	font-size:1.5em;
-	position:relative;
-	width:80%;
-	float:right;
-	overflow-y:auto;
-	height:100%;
-	background: rgba(0,0,0,0.6);
-	padding:1em;
-	box-sizing:border-box;
-	margin:0em;
-
 }
+
+slide.code pre{
+	font-size: 14px;
+	line-height:18px;
+	font-weight:bold;
+    margin: 0em;
+    padding-right: 10em;
+    overflow-x: auto;
+    position: relative;
+    width: 100%;
+    float: right;
+    overflow-y: auto;
+    height: 100%;
+    padding: 1em;
+    box-sizing: border-box;
+}
+
 
 slide.code img{
 	transform-origin: 0% 0%;
-	transform:scale(2.0); 
-	image-rendering: pixelated;
-	background: rgba(0,0,0,0.3);
-	border-left: 6px solid black;
-	position: relative;
-	float:left;
-	padding: 2px;
-	margin-left: -2%;}
+    transform: scale(1.0);
+    image-rendering: pixelated;
+    background: rgba(0,0,0,1);
+    border-left: 6px solid #2E1C14;
+    position: absolute;
+    right: 18px;
+    top: 0px;
+    padding: 2px;
+    margin-left: -2%;}
+
+slide.markdown code pre{
+	    background: rgba(0,0,0,0.5);
+}
 
 
-/*slide > *{display:none !important;}*/
+slide > *{display:none !important;}
+#main.overview slide > *,
 slide.near > *{display:inherit !important;}
 
-slide.cursor{
-	background: rgba(0,0,0,0.5);
+#main.overview slide.cursor{
+	border-color: orange;
 }
+
+
+
+#background{
+	position: fixed;
+	width:100%;
+	height:100%;
+	background: linear-gradient(#345D66, #010514);
+
+}
+
+slide.markdown.near{
+	    /*background: linear-gradient(#345D66, #010514);*/
+}
+
+indent{
+    background-image: url(../img/line.png);
+    background-size: 16px;
+    /* background-blend-mode: multiply; */
+    /*background-color: black;*/
+    opacity: 0.3;
+    background-position-x: 3px;
+    display: inline;
+}
+
+ws{
+
+}
+
+/*
+.backtick exp atom,
+.backtick exp ws,
+.backtick exp open,
+.backtick exp close{
+ background: #3B2323;
+ border-radius:1em;
+}
+
+.tilde exp atom,
+.tilde exp ws,
+.tilde exp open,
+.tilde exp close{
+ background: #334D34;
+}
+
+.backtick > exp > open:first-child{
+    border-radius: 1em 0em 0em 1em;
+}
+
+.backtick > exp > close {
+    border-radius: 0em 1em 1em 0em;
+}
+
+.tilde > exp > open:first-child,
+indent + exp > open:first-child{
+
+    border-radius: 1em 0em 0em 1em;
+}
+.tilde > exp > close {
+    border-radius: 0em 1em 1em 0em;
+}
+
+.backtick indent + exp > open:first-child{
+	border: 1px solid red;
+}
+
+*/
