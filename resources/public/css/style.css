@@ -158,7 +158,7 @@ slide.code img{
 	margin-left: -2%;}
 
 
-/*slide > *{display:none !important;}*/
+slide > *{display:none !important;}
 slide.near > *{display:inherit !important;}
 
 slide.cursor{

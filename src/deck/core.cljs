@@ -47,6 +47,7 @@
   (aset (.-style el) (clj->js k) v))
 
 (defn image-ratio [el]
+  (prn 'image-ratio)
   (let [screen-ratio (apply / (reverse @screen))
         dims [(.-width el)(.-height el)]
         ratio (apply / (reverse dims))
