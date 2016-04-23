@@ -73,20 +73,20 @@ function gen_theme(s){
 
 record = {
 	"list": {
-		"open": {"char": "(", "tag": "<exp class='list'>"},
-		"shut": {"char": ")", "tag": "</exp>"}},
+		"open": {"char": "<open>(</open>", "tag": "<exp class='list'>"},
+		"shut": {"char": "<close>)</close>", "tag": "</exp>"}},
 	"vector": {
-		"open": {"char": "[", "tag": "<exp class='vector'>"},
-		"shut": {"char": "]", "tag": "</exp>"}},
+		"open": {"char": "<open>[</open>", "tag": "<exp class='vector'>"},
+		"shut": {"char": "<close>]</close>", "tag": "</exp>"}},
 	"map": {
-		"open": {"char": "{", "tag": "<exp class='map'>"},
-		"shut": {"char": "}", "tag": "</exp>"}},
+		"open": {"char": "<open>{</open>", "tag": "<exp class='map'>"},
+		"shut": {"char": "<close>}</close>", "tag": "</exp>"}},
 	"set": {
-		"open": {"char": "#{", "tag": "<exp class='set'>"},
-		"shut": {"char": "}", "tag": "</exp>"}},
+		"open": {"char": "<open>#{</open>", "tag": "<exp class='set'>"},
+		"shut": {"char": "<close>}</close>", "tag": "</exp>"}},
 	"lambda": {
-		"open": {"char": "#(", "tag": "<exp class='lambda'>"},
-		"shut": {"char": ")", "tag": "</exp>"}},
+		"open": {"char": "<open>#(</open>", "tag": "<exp class='lambda'>"},
+		"shut": {"char": "<close>)</close>", "tag": "</exp>"}},
 	"char": {
 		"open": {"char": "\\", "tag": "<atom class='char'>"},
 		"shut": {"char": "", "tag": "</atom>"}},
@@ -208,6 +208,18 @@ function walk(o, fn){
 		else {
 			var res = null;
 			switch (o["tag"]) {
+				case "_": 
+					var ss = o["value"].split(/(\r\n|\n\r|\r|\n)/g);
+					if (ss.length > 1){
+						res = o["value"]
+						.replace(/(\r\n|\n\r|\r|\n)/, "<indent>")
+						.replace(/(\r\n|\n\r|\r|\n)/g, "</indent><indent>\n")
+						.replace(/(\<indent\>)/, "<indent>\n")+"</indent>";
+						break;}
+					else {
+						res = "<ws>"+o["value"]+"</ws>";
+						break;
+						}
 				default: res = walk(o["value"]);}
 			return res;}} 
 	else {return "" + o;}}
@@ -216,8 +228,15 @@ function mount(s, target){
 	dims = src_dims(s);
 	canvas = new_canvas(dims[0], dims[1]);
 	ctx = canvas.getContext("2d")
-	stack = [];
+
 	target.innerHTML = "<pre class='clj'>"+walk(peg.parse(s))+"</pre>";
 	target.appendChild(canvas_png(canvas));
 	return target;}
 
+function cljhtml(s){
+	try{return walk(peg.parse(s))}
+	catch (e){return ""+e}}
+
+	stack = [];
+	canvas = new_canvas(1, 1);
+	ctx = canvas.getContext("2d");

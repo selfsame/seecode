@@ -215,27 +215,26 @@
 --------------------
 
 > ## into this
-> (set! foo
-    (fn ([a b c]
-      (if (and (even? a) (neg? b) (map? c))
-        :horse
-        (if (and (odd? a) (pos? b))
-          :lion
-          (if (and (set? c) (neg? a))
-            :dog
-            (if (neg? b)
-              (if (map? c)
-                :bird
-                (if (and (neg? a) (zero? b))
-                  :mouse
-                  (if (and (pos? a) (empty? c)) 
-                    :snail)))
-              (if (and (neg? a) (zero? b))
-                :mouse 
-                (if (and (pos? a) (map? c)) 
-                  :fish)))))))))
 
-
+>	(set! foo
+	  (fn ([a b c]
+	    (if (and (even? a) (neg? b) (map? c))
+	      :horse
+	      (if (and (odd? a) (pos? b))
+	        :lion
+	        (if (and (set? c) (neg? a))
+	          :dog
+	          (if (neg? b)
+	            (if (map? c)
+	              :bird
+	              (if (and (neg? a) (zero? b))
+	                :mouse
+	                (if (and (pos? a) (empty? c)) 
+	                  :snail)))
+	            (if (and (neg? a) (zero? b))
+	              :mouse 
+	              (if (and (pos? a) (map? c)) 
+	                :fish)))))))))
 "
 
 )
