@@ -47,7 +47,6 @@
   (aset (.-style el) (clj->js k) v))
 
 (defn image-ratio [el]
-  (prn 'image-ratio)
   (let [screen-ratio (apply / (reverse @screen))
         dims [(.-width el)(.-height el)]
         ratio (apply / (reverse dims))
@@ -67,6 +66,7 @@
   (let [main (first ($ "#main"))
         slide (:dom m)]
     (mapv #(style! slide %1 (str (* %2 100) "%")) [:left :top] [x y])
+    (when (:zoom m) (style! slide :zoom (str (:zoom m))))
     (.appendChild main slide)))
 
 (defn unmount [])
@@ -92,6 +92,7 @@
         (class! (->slide k :dom) :markdown)
         (set! (.-innerHTML (->slide k :dom))
           (.toHTML js/markdown (or (:value m) s)))
+        (mapv #(set! (.-innerHTML %) (js/cljhtml (.-innerText %))) ($/find (->slide k :dom) "code"))
         (mount [k m])))))
 
 
@@ -115,9 +116,16 @@
   (mapv load-resource (-> @state :graph)))
 
 (defn on-resize [e]
-  (get-screen))
+  (let [[sx sy] (get-screen)
+        desired (/ sx 1400)
+        ratio (/ sy sx)]
+    (when (< desired 1.0)
+      (style! (first ($ "html")) :zoom (str desired)))
+    (inject-css "view-ratio"
+      (str "slide{padding:0em " (- (* ( - 1 ratio) 50) 10) "%;}"))
+    [desired ratio (- (* ( - 1 ratio) 50) 10)]))
 
-(def dirmap {:left [1 0] :right [-1 0] :up [0 -1] :down [0 1] :- 0.075 :+ 1.0})
+(def dirmap {:left [1 0] :right [-1 0] :up [0 -1] :down [0 1] :- 0.12 :+ 1.0 :z- -0.03 :z+ 0.03})
 
 (defn neighbors [[a b]]
   (for [v [[0 0][-1 0][1 0][0 1][0 -1]]] (mapv + [a b] v)))
@@ -126,27 +134,38 @@
   (mapv #(when-let [slide (->slide % :dom)] (f slide)) (neighbors k)))
 
 (defn navigate! [k]
-  (update-neighbors (:cursor @state) #(-class! % :near))
-  (if (#{:- :+} k)
-    (swap! state update :scale #(dirmap k))
-    (swap! state update :cursor 
-      #(let [pos (mapv - % (dirmap k))]
-        (if (->slide pos) 
-          (do (-class! (->slide % :dom) :cursor)
-              (class! (->slide pos :dom) :cursor)
-              pos) %))))
-  (update-neighbors (:cursor @state) #(class! % :near) )
+  (let []
+    (cond (#{:- :+} k)
+      (do (js/setTimeout #(({:- class! :+ -class!} k) (first ($ "#main")) "overview") 20)
+          (swap! state update :scale #(dirmap k)))
+      (#{:z- :z+} k)
+      (let [zoom (.. (->slide (:cursor @state) :dom) -style -zoom)]
+        (style! (->slide (:cursor @state) :dom) :zoom 
+          (str (+ (js/parseFloat (get {"" 1} zoom zoom)) (dirmap k)))))
+      :else
+      (do (update-neighbors (:cursor @state) #(-class! % :near))
+          (swap! state update :cursor 
+            #(let [pos (mapv - % (dirmap k))]
+              (if (->slide pos) 
+                (do (-class! (->slide % :dom) :cursor)
+                    (class! (->slide pos :dom) :cursor)
+                    pos) %)))
+          (update-neighbors (:cursor @state) #(class! % :near))
+          (if (->slide (:cursor @state) :img) 
+            (image-ratio (first ($/find (->slide (:cursor @state) :dom) "img"))))))
 
-  (if (->slide (:cursor @state) :img) 
-    (image-ratio (first ($/find (->slide (:cursor @state) :dom) "img"))))
-
-  (style! (first ($ "#main")) :transform 
-    (str  "scale(" (:scale @state)") "
-      "translate(" (apply str (interpose "," (map #(str (* % 100) "%") (mapv * (:cursor @state) [-1 -1]))))")")))
 
 
+    (style! (first ($ "#main")) :transform 
+      (str  
+        "scale(" (:scale @state) ")"
+        "translate(" (apply str (interpose "," (map #(str (* % 100) "%") (mapv * (:cursor @state) [-1 -1])))) ") "
+        ))))
 
-(def keymap {37 :left 39 :right 40 :up 38 :down 33 :- 34 :+})
+
+
+(def keymap {37 :left 39 :right 40 :up 38 :down 33 :- 34 :+ 
+  107 :z+ 109 :z-})
 
 (defn on-keydown [e]
   (j/log (.-keyCode e))
@@ -173,28 +192,65 @@
 
 
 
+(def ec1
+"# pdfn - predicate dispatching
+
+## `\"github.com/selfsame/pdfn\"`
+
+
+--------------------
+
+> ## compiles this
+  (defpdfn ^:inline foo)
+  ; 
+  (pdfn foo 
+    ([^pos?  a        b ^map?   c] :fish)
+    ([^pos?  a ^neg?  b ^empty? c] :snail)
+    ([^neg?  a ^zero? b         c] :mouse)
+    ([       a ^neg?  b ^map?   c] :bird)
+    ([^neg?  a        b ^set?   c] :dog)
+    ([^odd?  a ^pos?  b         c] :lion)
+    ([^even? a ^neg?  b ^map?   c] :horse))
+
+--------------------
+
+> ## into this
+> (set! foo
+    (fn ([a b c]
+      (if (and (even? a) (neg? b) (map? c))
+        :horse
+        (if (and (odd? a) (pos? b))
+          :lion
+          (if (and (set? c) (neg? a))
+            :dog
+            (if (neg? b)
+              (if (map? c)
+                :bird
+                (if (and (neg? a) (zero? b))
+                  :mouse
+                  (if (and (pos? a) (empty? c)) 
+                    :snail)))
+              (if (and (neg? a) (zero? b))
+                :mouse 
+                (if (and (pos? a) (map? c)) 
+                  :fish)))))))))
+
+
+"
+
+)
+
 
 
 (def DECK [
-[ { :md "title.md"}]
-
-[{ :value "#cljs" :md "ec.md"}
- { :value "#onlyone" :md "ec.md"}]
-
-[{ :value "#libGDX" :md "ec.md"}]
-
-[{ :md "arcadia.md"}
- {:code "code/hard_core.clj"}]
-
-[{:md "arcadia2.md"}
-{:img "data/img/arcadia/center-stairs.jpg"}
-{:img "data/img/arcadia/dubble-primitives.jpg"}
-{:img "data/img/arcadia/dungeon.jpg"}
-{:img "data/img/arcadia/spire.jpg"}
-{:img "data/img/arcadia/wolfram.jpg"}]
-
+[{:md "tween1.md"}
+ {:md "tween-demo.md"}
+ {:md "tween2.md"}
+ {:md "tween3.md"}
+ ;{:code "code/tween_core.clj"}
+ ]
 [
-{:md "ec.md":value "#first week"}
+{:md "arcadia2.md"}
 {:img "data/img/arcadia/cljunity01.png"}
 {:img "data/img/arcadia/compart.png"}
 {:img "data/img/arcadia/floaty miami.png"}
@@ -202,12 +258,6 @@
 {:img "data/img/arcadia/treegen.jpg"}
 {:img "data/img/arcadia/Untitled-12.png"}
 {:img "data/img/arcadia/Untitled-2.png"}]
-
-[{ :value "#Parade Route" :md "ec.md"}
-
-{ :value "#whale" :md "ec.md"}]
-
-[{ :value "#tween.core" :md "ec.md"}]
 
 [{ :value "#dual-snake" :md "ec.md"}
   { :img "data/html/gifs/1.gif"}
@@ -220,18 +270,15 @@
 
 [{:value "#An Evening of Modern Dance" :md "ec.md"}]
 
-[{ :value "#pdfn" :md "ec.md"}]
+[{ :value "#pdfn" :md "ec.md"}
+ { :md "inform.md"}
+  { :value ec1 :md "ec.md"}]
 
 [
  { :value "#adventure" :md "ec.md"}
  { :value "#monster" :md "ec.md"}
   { :img "data/img/kids.png"}
-  { :img "data/img/showoff.png"}]
-
-
-[{:value "#infinity-coaster" :md "ec.md"}]
-
-[{:value "#The Dims" :md "ec.md"}]])
+  { :img "data/img/showoff.png"}]])
 
 
 
