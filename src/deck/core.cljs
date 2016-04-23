@@ -192,29 +192,65 @@
 
 
 
+(def ec1
+"# pdfn - predicate dispatching
+
+## `\"github.com/selfsame/pdfn\"`
+
+
+--------------------
+
+> ## compiles this
+	(defpdfn ^:inline foo)
+	; 
+	(pdfn foo 
+	  ([^pos?  a        b ^map?   c] :fish)
+	  ([^pos?  a ^neg?  b ^empty? c] :snail)
+	  ([^neg?  a ^zero? b         c] :mouse)
+	  ([       a ^neg?  b ^map?   c] :bird)
+	  ([^neg?  a        b ^set?   c] :dog)
+	  ([^odd?  a ^pos?  b         c] :lion)
+	  ([^even? a ^neg?  b ^map?   c] :horse))
+
+--------------------
+
+> ## into this
+>	(set! foo
+	  (fn ([a b c]
+	    (if (and (even? a) (neg? b) (map? c))
+	      :horse
+	      (if (and (odd? a) (pos? b))
+	        :lion
+	        (if (and (set? c) (neg? a))
+	          :dog
+	          (if (neg? b)
+	            (if (map? c)
+	              :bird
+	              (if (and (neg? a) (zero? b))
+	                :mouse
+	                (if (and (pos? a) (empty? c)) 
+	                  :snail)))
+	            (if (and (neg? a) (zero? b))
+	              :mouse 
+	              (if (and (pos? a) (map? c)) 
+	                :fish)))))))))
+
+
+"
+
+)
+
 
 
 (def DECK [
-[ { :md "title.md" :zoom 1.1}]
-
-[{ :value "#cljs" :md "ec.md"}
- { :value "#onlyone" :md "ec.md"}]
-
-[{ :value "#libGDX" :md "ec.md"}]
-
-[{ :md "arcadia.md"}
- ;{:code "code/hard_core.clj"}
+[{:md "tween1.md"}
+ {:md "tween-demo.md"}
+ {:md "tween2.md"}
+ {:md "tween3.md"}
+ ;{:code "code/tween_core.clj"}
  ]
-
-[{:md "arcadia2.md"}
-{:img "data/img/arcadia/center-stairs.jpg"}
-{:img "data/img/arcadia/dubble-primitives.jpg"}
-{:img "data/img/arcadia/dungeon.jpg"}
-{:img "data/img/arcadia/spire.jpg"}
-{:img "data/img/arcadia/wolfram.jpg"}]
-
 [
-{:md "ec.md":value "#first week"}
+{:md "arcadia2.md"}
 {:img "data/img/arcadia/cljunity01.png"}
 {:img "data/img/arcadia/compart.png"}
 {:img "data/img/arcadia/floaty miami.png"}
@@ -222,18 +258,6 @@
 {:img "data/img/arcadia/treegen.jpg"}
 {:img "data/img/arcadia/Untitled-12.png"}
 {:img "data/img/arcadia/Untitled-2.png"}]
-
-[{ :value "#Parade Route" :md "ec.md"}
-
-{ :value "#whale" :md "ec.md"}]
-
-;TODO TWEEN
-[{:md "tween1.md"}
- {:md "tween-demo.md"}
- {:md "tween2.md"}
- {:md "tween3.md"}
- ;{:code "code/tween_core.clj"}
- ]
 
 [{ :value "#dual-snake" :md "ec.md"}
   { :img "data/html/gifs/1.gif"}
@@ -246,18 +270,15 @@
 
 [{:value "#An Evening of Modern Dance" :md "ec.md"}]
 
-[{ :value "#pdfn" :md "ec.md"}]
+[{ :value "#pdfn" :md "ec.md"}
+ { :md "inform.md"}
+  { :value ec1 :md "ec.md"}]
 
 [
  { :value "#adventure" :md "ec.md"}
  { :value "#monster" :md "ec.md"}
   { :img "data/img/kids.png"}
-  { :img "data/img/showoff.png"}]
-
-
-[{:value "#infinity-coaster" :md "ec.md"}]
-
-[{:value "#The Dims" :md "ec.md"}]])
+  { :img "data/img/showoff.png"}]])
 
 
 

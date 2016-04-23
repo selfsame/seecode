@@ -50,7 +50,9 @@
 
 [{:value "#An Evening of Modern Dance" :md "ec.md"}]
 
-[{ :value "#pdfn" :md "ec.md"}]
+[{ :value "#pdfn" :md "ec.md"}
+ { :md "inform.md"}
+  { :value ec1 :md "ec.md"}]
 
 [
  { :value "#adventure" :md "ec.md"}

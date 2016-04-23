@@ -147,6 +147,7 @@ slide.markdown p img{
 slide.markdown img{vertical-align: middle;}
 
 slide.markdown hr {
+	margin:0em;
 	border-style:none;
 	display: none;
 width:0em;
@@ -158,6 +159,7 @@ slide.markdown hr + *{
 	display:inline-block;
 	float:left;
 	width:48%;
+	margin-left:1%;
 }
 slide.markdown hr + * + * {
 	box-sizing:border-box;
