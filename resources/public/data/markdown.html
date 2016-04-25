@@ -1,0 +1,93 @@
+¶title
+# clojure game-dev!
+
+## _Joseph Parker_  
+
+>-----------
+># ![me](img/me.png)
+>* `selfsamegames.com`
+>* `twitter.com/jplur_`
+>* `github.com/selfsame`
+>* `selfsame.itch.io`
+
+¶arcadia
+# github.com/Arcadia
+
+## *`@nasser & @timsgardner`*
+
+## clojure CLR inside Unity
+> * complete clj environment & repl
+> * clj compilation
+> * build and ship to desktop platforms
+
+¶arcadia2
+## placing cubes
+
+¶tween
+# tween.core
+
+### `"github.com/selfsame/tween"`
+
+--------------
+
+> * composable 
+> * zero garbage
+>  * same perf as C#
+>
+> >  hello
+>  
+
+![](http://selfsamegames.com/gifs/tweens/tut2.gif) ![](http://selfsamegames.com/gifs/tweens/tut3.gif) ![](img/2.5k.gif)
+
+---------------
+¶tween1
+## constructor args
+
+`[target-value & unordered-opts]`
+
+  * ```0.7``` A float - ```{:duration 0.7}```
+  * ```:+``` relative flag - ```{:+ true}```
+  * `:pow2` - `:pow5` easing ```{:in :pow2 :out :pow5}```
+  * ```#(%)``` callback fn ```{:callback (atom [#(%)])}```
+
+
+#![](https://files.gitter.im/selfsame/hard/Gm15/bubb23.gif) ![](http://selfsamegames.com/gifs/tweens/tween01.gif)
+
+¶tween2
+>------------
+
+>	;assoc returns new tween
+>	(def z (tween/euler (Vector3. 45 0 100) 0.5))
+	(def y (assoc z :duration 1.2))
+	(= z y) ;false
+
+>	;callbacks
+	(tween/position (Vector3. 0 0 0) 0.5 
+	  (fn [go] (log (str "done"))))
+
+	;tween callbacks
+	(def b (tween/position (Vector3. 0 0 0) 0.5))
+	(def a (tween/position (Vector3. 0 -2 0) 0.5 b))
+
+	;mutation for cyclical refs
+	(link! a b a) ;a - b - a - CYCLE
+	(link! b z y) ;     \  z - y
+
+¶predicate
+# predicate dispatch
+
+> blah blah
+
+¶mud
+`github./com/selfsame/mud.tilde.town`
+
+_________
+
+# ![](./data/img/mud.png)
+
+# ![](./data/img/mud2.png)
+
+¶pdfn1
+## generic Unity component
+
+# ![](./data/img/pred.gif)

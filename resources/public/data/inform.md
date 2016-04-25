@@ -1,13 +1,25 @@
-	
->	Before burning the player when the player is protected by Clemens:
-	  say "You hold the flame to your arm as long as you can stand. 
-	  Clemens begins to thrash back and forth, in the grip of some 
-	  delirium, but doesn't wake.".
->
->	Before burning something which is protected by an important impervious thing (called the protector)\:
-	  say "[if the noun is the player]You barely feel anything, 
-	  thanks to[otherwise][The noun] resists flame, thanks to its 
-	  link with[end if] [the protector]." instead.
 
 
-> Emily Short, "Damnatio Memoriae" Chapter 2
+### `github./com/selfsame/mud.tilde.town
+
+_________
+
+# ![](./data/img/mud.png)
+
+>	@given(a("closed", "container"))
+	def adjectives(e):
+	  return "closed"
+
+	@given(a("open", "container"))
+	def adjectives(e):
+	  return "open"
+
+	@check("entity", a("closed", "container"))
+	def close(a, b):
+	  say("It's already closed.")
+	  return False
+
+	@given("entity", a("opened", "container"))
+	def close(a, b):
+	  b["closed"] = True
+	  report("[Subject] close[s] [object].")

@@ -24,7 +24,7 @@ body{
 }
 
 slide{
-    transition: zoom 0.2s;
+    /*transition: zoom 0.2s;*/
 	position:absolute;
 	display:block;
 	box-sizing:border-box;
@@ -36,7 +36,7 @@ slide{
 
 #main.overview slide{
 	border: 2em solid rgba(255,255,255,0.2);
-	background:none;
+	/*background:none;*/
 }
 
 /*#main.overview slide > * > * > *{display:none;}*/
@@ -178,6 +178,26 @@ slide iframe{
 }
 
 
+slide.slideshow span.nav{
+	position: absolute;
+    font-size: 1em;
+    font-family: monospace;
+    left: 0em;
+    top: 0em;
+        white-space: pre;
+    line-height: 1em;
+}
+
+slide.slideshow img{
+	transition: opacity 0.1s;
+	opacity:0;
+}
+
+slide.slideshow img.gif{
+		image-rendering: pixelated;
+		width: initial !important;
+		transform: scale(2.0);
+}
 
 ::selection {
 	background: #61295A;
@@ -185,6 +205,9 @@ slide iframe{
 
 slide.code{
 	padding:0em;
+	background: rgba(0,0,0,0.5);
+	z-index: -1;
+	zoom:1.2;
 }
 
 slide pre{
@@ -209,20 +232,34 @@ slide.code pre{
     height: 100%;
     padding: 1em;
     box-sizing: border-box;
+    overflow-x:hidden;
+
 }
 
 
 slide.code img{
-	transform-origin: 0% 0%;
-    transform: scale(1.0);
-    image-rendering: pixelated;
+/*	transform-origin: 0% 0%;
+    transform: scale(1.0);*/
+    /*image-rendering: pixelated;*/
     background: rgba(0,0,0,1);
-    border-left: 6px solid #2E1C14;
+    border: 0.5em solid #2E1C14;
+    border-width:0em 0em 0em 0.5em;
     position: absolute;
-    right: 18px;
+    right: 0px;
+    width:9em;
+    box-sizing:border-box;
     top: 0px;
-    padding: 2px;
-    margin-left: -2%;}
+    height:100%;
+    bottom:0px;
+    padding: 0.2em;
+    margin-left: -2%;
+    z-index: -1;}
+
+slide.code h1{
+	color:orange; font-size:5em; text-align:center;
+	font-family:consolas;
+}
+
 
 slide.markdown code pre{
 	    background: rgba(0,0,0,0.5);
@@ -303,3 +340,48 @@ indent + exp > open:first-child{
 }
 
 */
+
+
+
+::-webkit-scrollbar {
+  width: 7.8em;
+  height: 4em;
+}
+::-webkit-scrollbar-button {
+  width: 0px;
+  height: 0px;
+}
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border: 0.5em solid rgba(252, 255, 0, 0.4);
+  border-width:0em 0em 0em 0.5em;
+  box-sizing:border-box;
+
+}
+::-webkit-scrollbar-thumb:hover,
+::-webkit-scrollbar-track:hover ::-webkit-scrollbar-thumb {
+
+    border: 0.5em solid #FCFF00;
+      border-right-width:0em;
+        border-width:0em 0em 0em 0.5em;
+    }
+::-webkit-scrollbar-thumb:active {
+
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-track:hover {
+		cursor:pointer;
+}
+::-webkit-scrollbar-track:active {
+
+}
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+
+
+div.cache {width:100%;
+height:100%;}

@@ -61,6 +61,8 @@
   { :img "data/img/showoff.png"}]
 
 
-[{:value "#infinity-coaster" :md "ec.md"}]
+[ {:value "#infinity-coaster" :md "ec.md" :name "infinity-coaster"}
+  {:slideshow "makehuman.json"}
+  {:slideshow "world.json"}]
 
 [{:value "#The Dims" :md "ec.md"}]]
