@@ -194,7 +194,7 @@
           (str (+ (js/parseFloat (get {"" 1} zoom zoom)) (dirmap k)))))
       (#{:left :right :up :down :?} k)
       (do (update-neighbors (:cursor @state) #(-class! % :near))
-          (swap! state update :cursor 
+      		(swap! state update :cursor 
             #(let [pos (mapv - % (dirmap k))]
               (if (->slide pos) 
                 (do (-class! (->slide % :dom) :cursor)

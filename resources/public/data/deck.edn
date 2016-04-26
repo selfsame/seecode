@@ -52,6 +52,14 @@
 
   [{:value "#infinity-coaster" :md "ec.md"}]
 
+
 [{:value "#The Dims" :md "ec.md"}
 {:code "code/the-dims/data.clj"}
-{:code "code/the-dims/play.clj"}]]
+{:code "code/the-dims/play.clj"}]
+
+[ {:value "#infinity-coaster" :md "ec.md" :name "infinity-coaster"}
+  {:slideshow "makehuman.json"}
+  {:slideshow "world.json"}]
+
+[{:value "#The Dims" :md "ec.md"}]]
+

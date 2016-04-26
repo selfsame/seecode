@@ -211,6 +211,7 @@ slide.slideshow img.gif{
 
 slide.scroll{overflow-y:auto;}
 
+
 ::selection {
 	background: #61295A;
 	color: #95F7D1;}
