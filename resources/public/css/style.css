@@ -5,6 +5,8 @@
     font-style: normal;
 }
 
+
+
 body{
 	background: #16191B;
 	color: #A9BACB;
@@ -94,16 +96,23 @@ slide.frame.markdown {
 
 slide.markdown p,
 slide.markdown blockquote{
-	margin:0.5em 0em;
+	margin:0.2em 0em;
 }
 
 slide.markdown h1, slide.markdown h2, slide.markdown h3{
 	margin-top:0.8em;
 	text-align:center;
 	font-family:verdana;
+	margin:0.4em 0em;
+	clear:both;
 }
 
-slide.markdown h1{color:yellow; font-size:3em;}
+slide.markdown pre{
+	margin:0em;
+	clear:both;
+}
+
+slide.markdown h1{color:yellow; font-size:2.7em;}
 slide.markdown h2{color:cyan;}
 slide.markdown h3{color:lime;}
 
@@ -112,13 +121,13 @@ slide.markdown li{
 }
 
 slide.markdown code{
-	    font-family: consolas, 'fira_coderegular', monospace;
+	    font-family: 'fira_coderegular', monospace;
     background: rgba(0,0,0,0.5);
-    padding: 0em 0.2em;
+    padding: 0.1em 0.1em;
     border-radius: 0.2em;
 
     font-size: 0.8em;
-    line-height: 1.4em;
+    line-height: 1.3em;
 }
 
 slide.markdown pre code{
@@ -129,7 +138,7 @@ slide.markdown pre code{
 slide.markdown blockquote{
 	margin: 0em 0em 0em 0em;
     background: rgba(0,0,0,0.2);
-    padding: 0.2em 1em;
+    padding: 0.5em 0.5em;
     border-radius: 0.5em;
     margin-bottom:0.5em;
 }
@@ -151,7 +160,8 @@ slide.markdown hr {
 	border-style:none;
 	display: none;
 width:0em;
-float:left;}
+float:left;
+clear:both;}
 
 
 slide.markdown hr + *{
@@ -160,12 +170,14 @@ slide.markdown hr + *{
 	float:left;
 	width:48%;
 	margin-left:1%;
+	clear:none;
 }
 slide.markdown hr + * + * {
 	box-sizing:border-box;
 	display:inline-block;
 	float:right;
 	width:48%;
+	clear:none;
 }
 
 
@@ -177,7 +189,7 @@ slide iframe{
 	border-radius:2em;
 }
 
-
+slide.scroll{overflow-y:auto;}
 
 ::selection {
 	background: #61295A;
@@ -185,10 +197,11 @@ slide iframe{
 
 slide.code{
 	padding:0em;
+	background:rgba(0,0,0,0.6);
 }
 
 slide pre{
-    font-family: consolas, 'fira_coderegular', monospace;
+    font-family: 'fira_coderegular', monospace;
     text-rendering: optimizeLegibility;
     font-variant-ligatures: contextual;
     -webkit-font-feature-settings: "liga" on, "calt" on;
@@ -253,17 +266,24 @@ slide.markdown.near{
 
 indent{
     background-image: url(../img/line.png);
-    background-size: 16px;
+    background-size: 1.25em;
     /* background-blend-mode: multiply; */
     /*background-color: black;*/
-    opacity: 0.3;
-    background-position-x: 3px;
+    opacity: 0.2;
+    background-position-x: 0.6125em;
     display: inline;
 }
 
 ws{
 
 }
+
+slide.scroll {padding:0em 3em;}
+
+#main slide.markdown > style{display:none !important;}
+
+video{margin: 1em auto;
+	display:block;}
 
 /*
 .backtick exp atom,
@@ -303,3 +323,39 @@ indent + exp > open:first-child{
 }
 
 */
+
+
+background: #100A01
+foreground: #A0E0CE
+
+! black
+*color0: #1e2f41
+*color8: #906b61
+
+! red
+*color1: #E83F19
+*color9: #7f403e
+
+! green
+*color2: #15CE57
+*color10: #5f7348
+
+! yellow
+*color3: #EAC50E
+*color11: #a6594a
+
+! blue
+*color4: #3F7AE6
+*color12: #5EA3C3
+
+! magenta
+*color5: #853386
+*color13: #6d4f8a
+
+! cyan
+*color6: #229686
+*color14: #2f7066
+
+! white
+*color7: #b99f8d
+*color15: #f3dcc6

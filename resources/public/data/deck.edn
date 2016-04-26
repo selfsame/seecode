@@ -1,24 +1,17 @@
 [
-[ { :md "title.md" :zoom 1.1}]
 
-[{ :value "#cljs" :md "ec.md"}
- { :value "#onlyone" :md "ec.md"}]
+[{:md "title.md" :zoom 1.1}
+ {:md "why-clojure.md"}]
 
-[{ :value "#libGDX" :md "ec.md"}]
+[{ :value "#cljs roguelike" :md "ec.md"}]
+
+[{ :md "libGDX.md"}]
 
 [{ :md "arcadia.md"}
- ;{:code "code/hard_core.clj"}
- ]
+ {:value arcadia2 :md "ec.md"}]
 
-[{:md "arcadia2.md"}
-{:img "data/img/arcadia/center-stairs.jpg"}
-{:img "data/img/arcadia/dubble-primitives.jpg"}
-{:img "data/img/arcadia/dungeon.jpg"}
-{:img "data/img/arcadia/spire.jpg"}
-{:img "data/img/arcadia/wolfram.jpg"}]
 
-[
-{:md "ec.md":value "#first week"}
+[{:code "code/hard_core.clj"}
 {:img "data/img/arcadia/cljunity01.png"}
 {:img "data/img/arcadia/compart.png"}
 {:img "data/img/arcadia/floaty miami.png"}
@@ -28,39 +21,37 @@
 {:img "data/img/arcadia/Untitled-2.png"}]
 
 [{ :value "#Parade Route" :md "ec.md"}
+ { :iframe "data/html/whale.html"}]
 
-{ :value "#whale" :md "ec.md"}]
-
-;TODO TWEEN
 [{:md "tween1.md"}
  {:md "tween-demo.md"}
  {:md "tween2.md"}
- {:md "tween3.md"}
- ;{:code "code/tween_core.clj"}
- ]
+ {:md "tween3.md"}]
 
-[{ :value "#dual-snake" :md "ec.md"}
-  { :img "data/html/gifs/1.gif"}
-  { :value "#wacky-waving" :md "ec.md"}
+[{:value "#dual-snake" :md "ec.md"}
+ {:img "data/html/gifs/1.gif"}
+  {:code "code/dual-snake.clj"}]
+
+[{ :value "#wacky-waving" :md "ec.md"}
   { :value "#night-farm" :md "ec.md"}
-  { :value "#wacky-waving" :md "ec.md"}
   {:value "#lonely-dungeon" :md "ec.md"}]
 
 [{:md "ec.md"}]
 
 [{:value "#An Evening of Modern Dance" :md "ec.md"}]
 
-[{ :value "#pdfn" :md "ec.md"}
+[{ :value pred1 :md "ec.md"}
+ { :value pred2 :md "ec.md"}
  { :md "inform.md"}
-  { :value ec1 :md "ec.md"}]
+  {:iframe "data/html/pdf.html"}
+  ]
 
-[
- { :value "#adventure" :md "ec.md"}
- { :value "#monster" :md "ec.md"}
+  [{ :value "#monster" :md "ec.md"}
   { :img "data/img/kids.png"}
   { :img "data/img/showoff.png"}]
 
+  [{:value "#infinity-coaster" :md "ec.md"}]
 
-[{:value "#infinity-coaster" :md "ec.md"}]
-
-[{:value "#The Dims" :md "ec.md"}]]
+[{:value "#The Dims" :md "ec.md"}
+{:code "code/the-dims/data.clj"}
+{:code "code/the-dims/play.clj"}]]

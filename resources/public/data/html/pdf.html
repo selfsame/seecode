@@ -1,0 +1,295 @@
+
+<!-- saved from url=(0034)http://selfsamegames.com/pdf-test/ -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<style>
+	article {border-bottom: 1px silver dashed; clear:both;}
+	#adventure article code {position:relative; float:right; white-space:pre;
+      width: 60%;margin-top:1em;
+        padding: 0em 0.5em;
+    box-sizing: border-box;
+    zoom: 0.8;}
+  #adventure h2{
+    font-size:1.2em;
+    color: #FFA16B;
+
+  }
+	article div {position:relative; width:39%; float:left;}
+  article img {margin: 1em auto;     position: relative;
+    display: block;
+      margin: 1em 0em;
+    width: 100%;}
+</style>
+<style type="text/css">:root #ad_frame
+{display:none !important;}</style><style type="text/css"></style></head>
+<div id="adventure">
+
+
+
+
+<article>
+<div>
+<h2>predicate dispatch adventure</h2>
+<img src="./pdf_files/showcase2.gif">
+</p>
+
+</div>
+<code>
+(ns warmup.core
+  (:use 
+  	hard.core 
+  	hard.input 
+    hard.physics
+    pdf.core
+    tween.core)
+  (:require hard.life))
+ 
+  
+(def ZONE (atom nil))
+
+(defn tint&gt; [o color] 
+  ((tween.core/material-color color 1.5 :pow2 ) (-&gt;go o)))
+(defn scale&gt; [o v] 
+((tween.core/scale v 0.5 :pow2 ) (-&gt;go o)))
+
+(def player? #(:player %))
+(def item? #(:item %))
+(def data? #(data (-&gt;go %)))
+(defn key-is? [k v] #(= v (get % k)))
+(def exit? (is "exit"))
+
+
+</code>
+</article>
+<article>
+<div>
+<h2>entity behaviour</h2>
+<img src="./pdf_files/entity.gif">
+<p>
+Only one entity, but this would get split up as new variations share and and override features.</p>
+<p>For example, animation, targeting, and movement should be called via dispatch.</p>
+</div>
+<code>
+(rule init [o d]
+  {d (key-is? :entity :badball)}
+  (hard.life/route-update o 
+    (fn [c]
+      (when-let [target (:target (data o))]
+        (let [dist (.magnitude (V- (-&gt;v3 o) (-&gt;v3 target))) 
+              [x y z] (-&gt;vec (inverse-transform-point o 
+                        (move-towards (-&gt;v3 o) 
+                                      (-&gt;v3 target) 2)))]
+      (force! (-&gt;rigidbody o) x y z)
+        (when (&gt; dist 15.0)
+          (scale&gt; (-&gt;go (first (children o))) (-&gt;v3 0.9))
+          (data! o (dissoc (data o) :target)))) ))))
+
+(rule trigger [a ^player? ad b bd]
+  {bd (key-is? :entity :badball)}
+  (when-not (:target bd)
+    (data! b (conj bd {:target a}))
+    (let [red&gt; (tween.core/material-color (color 1 0 0 1.0) 0.2 )
+          big&gt; (tween.core/scale (-&gt;v3 2)  0.2)
+          small&gt; (tween.core/scale (-&gt;v3 1)  0.2)
+          white&gt; (tween.core/material-color (color 1 0.8 0 0.3) 0.2 )]
+      (tween.core/link! red&gt; white&gt; red&gt;)
+      (tween.core/link! big&gt; small&gt; big&gt;)
+      (tint&gt; b (color 0.7 0.7 0.7))
+      (red&gt; (-&gt;go (first (children b))))
+      (big&gt; (-&gt;go (first (children b)))))))
+
+(rule hard.life/start [^data? c tag id]
+  (init (-&gt;go c) (data (-&gt;go c))))
+
+</code>
+</article>
+
+
+
+<article>
+<div>
+<h2>stub :item</h2>
+<img src="./pdf_files/bump.gif">
+
+</div>
+<code>
+(rule collide [a ad b bd])
+
+(rule collide [a ^player? a-data b ^item? b-data]
+  (tint&gt; b (color 0.0 1.0 0.5))
+  (scale&gt; b (-&gt;v3 3.0)))
+
+(rule hard.life/collision-enter [c collision tag id]
+  (let [a (-&gt;go c) 
+        b (-&gt;go (.collider collision))]
+  (collide a (data a) b (data b))))
+
+
+</code>
+</article>
+
+<article>
+<div>
+<h3>(data! obj value) (data obj)</h3>
+<p>A simple atom is used to associate game objects with data.  High level dispatch systems add a data arg along with the game object.</p>
+
+
+</div>
+<code>
+(def things [
+  [:obstacle {:item :crate}]
+  [:badball {:entity :badball :hp 20 :speed 0.08 :follow true}]] )
+
+(rule spawn [k ^empty? col]
+  (log "error: no spawn points"))
+
+(rule spawn [k ^sequential? col]
+  (mapv 
+    #(let [[k d] (rand-nth things)]
+       (data! (clone! k (-&gt;v3 %)) d)) 
+    col))
+
+
+</code>
+</article>
+
+<article>
+<div>
+<h2>dispatching for a world map</h2>
+<img src="./pdf_files/load-zone.gif">
+<p>A :world zone connects zones with a scaled up map with a different camera rig and player model. Instead of a dedicated scene or function, I insert a make-camera and clone-player rule.</p>
+
+
+</div>
+<code>
+(defn camera-update [c]
+  (let [p (the player)
+        o (-&gt;go c)
+        [ox oy oz] (v- (-&gt;v3 p) (-&gt;v3 o))
+        target-pos 
+        [(cond (&lt; ox -7) (+ (X p) 7)
+               (&gt; ox 7) (- (X p) 7) :else (X o)) 
+        (Y o) 
+        (cond (&lt; oz 25) (- (Z p) 25)
+              (&gt; oz 30) (- (Z p) 30) :else (Z o))]]
+  (position! o target-pos)
+  (lerp-look! o (v+ (-&gt;v3 p)  [0 6.0 0]) 0.05)))
+
+(rule make-camera [k]
+  (let [camera (clone! :camera)]
+    (hard.life/route-update (the camera) camera-update)        
+    ((tween.core/scale (-&gt;v3 1000) 2.2 :pow2) (the transition))))
+
+(rule make-camera [k] {k #{:world}}
+  (let [camera (clone! :world-camera)]
+    (parent! camera (the player))
+    ((tween.core/scale (-&gt;v3 5000) 2.2 :pow2) (the transition))))
+
+(rule clone-player [k]
+  (clone! :player))
+
+(rule clone-player [k] {k #{:world}}
+  (let [p (clone! :world-player)]
+    (! p name "player") p))
+
+
+(defn make-player [k]
+  (let [player (data! (clone-player k) {:player true :entity true :hp 100 :speed 0.1})]
+    (hard.life/route-update player
+      (fn [c]
+        (let [o (-&gt;go c)]
+        (route key?
+          "a" (position! o (-&gt;v3 (v- (-&gt;v3 o) [0.12 0 0])))
+          "d" (position! o (-&gt;v3 (v+ (-&gt;v3 o) [0.12 0 0])))
+          "w" (position! o (-&gt;v3 (v+ (-&gt;v3 o) [0 0 0.12])))
+          "s" (position! o (-&gt;v3 (v- (-&gt;v3 o) [0 0 0.12])))
+          ))))))
+
+
+</code>
+</article>
+
+<article>
+<div>
+<img src="./pdf_files/tweak-camera.gif">
+<p>
+Loading zones is split up by zone keyword, then branched into dispatch calls for making the player, camera, and spawning entities.</p>
+
+<p>
+tweak-camera changes the camera position based on the loaded zone keyword, without PDF this would be a clumsy inline lookup of zone data, here it's just inserted as needed.</p>
+
+
+</div>
+<code>
+(rule tweak-camera [k]
+  {k #{:pyramids}}
+  (position! (the camera) [(X (the camera)) 7 (Z (the camera))]))
+
+(rule tweak-camera [k]
+  {k #{:mountain}}
+  (position! (the camera) [(X (the camera)) 18 (Z (the camera))]))
+
+(rule setup-entities [k]
+  (make-player k)
+  (make-camera k)
+  (spawn k (arcadia.core/objects-named "spawner"))
+  (tweak-camera k))
+ 
+(rule load-zone [k] {k (is :mountain)}
+  (clear-cloned!)
+  (clone! :mountain)
+  (setup-entities k))
+
+(rule load-zone [k] {k (is :pyramids)}
+  (clear-cloned!)
+  (clone! :pyramids)
+  (setup-entities k))
+ 
+(rule load-zone [k] {k (is :world)}
+  (clear-cloned!)
+  (clone! :world)
+  (setup-entities k))
+
+
+
+</code>
+</article>
+
+<article>
+<div>
+<img src="./pdf_files/handler.png">
+<p>For arcadia, I'm using a Handler component to fire dispatch calls for all non-repeating Unity messages. Update, MouseOver, etc. will probably be given their own dedicated component channels for PDF.</p>
+<p>I'm catching all Handler trigger-enters and dispatching a 'trigger pdf with data args added, to be used by high level interactions.</p>
+</div>
+
+<code>
+(rule trigger [o ^player? d c ^exit? tag id]
+  (defer! (destroy! (-&gt;go c)))
+  ((tween.core/scale (-&gt;v3 2) 1.3 {:in :pow2 :out :pow3} 
+    (fn [_]     
+        (load-zone (keyword id))
+        (let [ex (find-name (str "exit-" @ZONE))
+              ep (child-named ex "entry-point")] 
+          (when ep (position! (the player) (-&gt;v3 ep))))
+        (reset! ZONE id))) 
+  (the transition)))
+
+(rule hard.life/trigger-enter [c collider tag id]
+  (let [a (-&gt;go collider)  ad (data a)
+        b (-&gt;go c)  bd (data b)]
+    (if (and ad bd) 
+      (trigger a ad b bd)
+      (trigger a ad b tag id))))
+</code>
+</article>
+
+<article>
+<code>
+(let [brain (or (the BRAIN) (GameObject. "BRAIN"))]
+  (hard.life/route-update brain (fn [c] (do-deferred))))
+
+(reset! ZONE "world")
+(load-zone :world)
+</code>
+</article>
+
+</div></html>

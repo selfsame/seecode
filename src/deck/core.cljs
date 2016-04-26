@@ -93,6 +93,16 @@
         (set! (.-innerHTML (->slide k :dom))
           (.toHTML js/markdown (or (:value m) s)))
         (mapv #(set! (.-innerHTML %) (js/cljhtml (.-innerText %))) ($/find (->slide k :dom) "code"))
+        (mount [k m])))
+    (:iframe m)
+    (js/request (str (:iframe m)) 
+      (fn [s]
+        (swap! state update-in [:graph k] assoc :text s)
+        (class! (->slide k :dom) :markdown)
+        (class! (->slide k :dom) :scroll)
+        (set! (.-innerHTML (->slide k :dom))
+          s)
+        (mapv #(set! (.-innerHTML %) (js/cljhtml (.-innerText %))) ($/find (->slide k :dom) "code"))
         (mount [k m])))))
 
 
@@ -164,7 +174,7 @@
 
 
 
-(def keymap {37 :left 39 :right 40 :up 38 :down 33 :- 34 :+ 
+(def keymap {37 :left 39 :right 40 :up 38 :down 33 :- 34 :+ 13 :+ 27 :-
   107 :z+ 109 :z-})
 
 (defn on-keydown [e]
@@ -192,64 +202,79 @@
 
 
 
-(def ec1
-"# pdfn - predicate dispatching
+(def pred1
+"# pdfn - predicate dispatch
+## `\"github.com/selfsame/pdfn\"` clojars `[selfsame/pdfn \"1.0\"]`
 
-## `\"github.com/selfsame/pdfn\"`
-
-
---------------------
-
-> ## compiles this
-  (defpdfn ^:inline foo)
-  ; 
-  (pdfn foo 
-    ([^pos?  a        b ^map?   c] :fish)
-    ([^pos?  a ^neg?  b ^empty? c] :snail)
-    ([^neg?  a ^zero? b         c] :mouse)
-    ([       a ^neg?  b ^map?   c] :bird)
-    ([^neg?  a        b ^set?   c] :dog)
-    ([^odd?  a ^pos?  b         c] :lion)
-    ([^even? a ^neg?  b ^map?   c] :horse))
 
 --------------------
 
-> ## into this
+> ### compiles this
+	(defpdfn ^:inline foo)
+>	 
+	(pdfn foo 
+	  ([^pos?  a        b ^map?   c] :fish)
+	  ([^pos?  a ^neg?  b ^empty? c] :snail)
+	  ([^neg?  a ^zero? b         c] :mouse)
+	  ([       a ^neg?  b ^map?   c] :bird)
+	  ([^neg?  a        b ^set?   c] :dog)
+	  ([^odd?  a ^pos?  b         c] :lion)
+	  ([^even? a ^neg?  b ^map?   c] :horse))
 
->	(set! foo
-	  (fn ([a b c]
-	    (if (and (even? a) (neg? b) (map? c))
-	      :horse
-	      (if (and (odd? a) (pos? b))
-	        :lion
-	        (if (and (set? c) (neg? a))
-	          :dog
-	          (if (neg? b)
-	            (if (map? c)
-	              :bird
-	              (if (and (neg? a) (zero? b))
-	                :mouse
-	                (if (and (pos? a) (empty? c)) 
-	                  :snail)))
+--------------------
+
+> ### into this
+	(set! foo
+	(fn ([a b c]
+	  (if (and (even? a) (neg? b) (map? c))
+	    :horse
+	    (if (and (odd? a) (pos? b))
+	      :lion
+	      (if (and (set? c) (neg? a))
+	        :dog
+	        (if (neg? b)
+	          (if (map? c)
+	            :bird
 	            (if (and (neg? a) (zero? b))
-	              :mouse 
-	              (if (and (pos? a) (map? c)) 
-	                :fish)))))))))
-"
+	              :mouse
+	              (if (and (pos? a) (empty? c)) 
+	                :snail)))
+	          (if (and (neg? a) (zero? b))
+	            :mouse 
+	            (if (and (pos? a) (map? c)) 
+	              :fish)))))))))")
 
-)
+(def pred2
+"### ..
+
+---------------
 
 
+> # ![](data/pred-pyhon.png)
+
+---------------
+
+> # ![](data/pred-pyhon2.png)"
+  )
+
+(def arcadia2 
+"## hard.core
+
+    (clone! :player (->v3 0 1 0))")
 
 (def DECK [
-[{:md "tween1.md"}
- {:md "tween-demo.md"}
- {:md "tween2.md"}
- {:md "tween3.md"}
- ;{:code "code/tween_core.clj"}
- ]
-[
-{:md "arcadia2.md"}
+[{:md "title.md" :zoom 1.1}
+ {:md "why-clojure.md"}]
+
+[{ :value "#cljs roguelike" :md "ec.md"}]
+
+[{ :md "libGDX.md"}]
+
+[{ :md "arcadia.md"}
+ {:value arcadia2 :md "ec.md"}]
+
+
+[{:code "code/hard_core.clj"}
 {:img "data/img/arcadia/cljunity01.png"}
 {:img "data/img/arcadia/compart.png"}
 {:img "data/img/arcadia/floaty miami.png"}
@@ -258,26 +283,29 @@
 {:img "data/img/arcadia/Untitled-12.png"}
 {:img "data/img/arcadia/Untitled-2.png"}]
 
-[{ :value "#dual-snake" :md "ec.md"}
-  { :img "data/html/gifs/1.gif"}
-  { :value "#wacky-waving" :md "ec.md"}
+[{ :value "#Parade Route" :md "ec.md"}
+ { :iframe "data/html/whale.html"}]
+
+[{:md "tween1.md"}
+ {:md "tween-demo.md"}
+ {:md "tween2.md"}
+ {:md "tween3.md"}]
+
+[{:value "#dual-snake" :md "ec.md"}
+ {:img "data/html/gifs/1.gif"}
+  {:code "code/dual-snake.clj"}]
+
+[{ :value "#wacky-waving" :md "ec.md"}
   { :value "#night-farm" :md "ec.md"}
-  { :value "#wacky-waving" :md "ec.md"}
   {:value "#lonely-dungeon" :md "ec.md"}]
 
-[{:md "ec.md"}]
-
-[{:value "#An Evening of Modern Dance" :md "ec.md"}]
-
-[{ :value "#pdfn" :md "ec.md"}
+[{ :value pred1 :md "ec.md"}
+ { :value pred2 :md "ec.md"}
  { :md "inform.md"}
-  { :value ec1 :md "ec.md"}]
-
-[
- { :value "#adventure" :md "ec.md"}
- { :value "#monster" :md "ec.md"}
-  { :img "data/img/kids.png"}
-  { :img "data/img/showoff.png"}]])
+  {:iframe "data/html/pdf.html"}
+  ]
+  
+])
 
 
 
