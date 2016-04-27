@@ -34,6 +34,13 @@ slide{
 	overflow:hidden;
 }
 
+div.column{
+	float:left;
+	min-height:1px;
+	padding-right: 0.5em;
+	box-sizing:border-box;
+}
+
 #main.overview slide{
 	border: 2em solid rgba(255,255,255,0.2);
 	/*background:none;*/
@@ -93,7 +100,8 @@ slide.frame.markdown {
 }
 
 slide.markdown p,
-slide.markdown blockquote{
+slide.markdown blockquote,
+slide.markdown ul {
 	margin:0.2em 0em;
 }
 
@@ -148,7 +156,8 @@ slide.markdown h1 img{
 
 slide.markdown p img{
 	margin:2% 0% 2%;
-	width:44%;
+	/*width:44%;*/
+	max-width:100%;
 }
 
 slide.markdown img{vertical-align: middle;}
@@ -156,9 +165,9 @@ slide.markdown img{vertical-align: middle;}
 slide.markdown hr {
 	margin:0em;
 	border-style:none;
-	display: none;
+	/*display: none;*/
 	width:0em;
-	float:left;
+	/*float:left;*/
 	clear:both;}
 
 

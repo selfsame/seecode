@@ -1,6 +1,7 @@
 (ns deck.core
   (:require
     [goog.events :as events]
+    [clojure.string :as string]
     [cljs.reader :as reader]
     [cljs.pprint :as pprint]
     [cognitect.transit :as transit]
@@ -41,6 +42,12 @@
                (first ($ (str "<style id='" id "'></style>"))))]
     (aset el "innerHTML" s)
     (.appendChild (first ($ "head")) el)))
+
+(defn slide-dsl [s]
+  (string/replace
+    (string/replace s #"(★)([0-9]+)" 
+      #(str "<div class='column' style='width:" (last %1) "%'>"))
+    #"(★)/" "</div>"))
 
 (defn style! [el k v] (when el (aset (.-style el) (clj->js k) v)))
 
@@ -109,8 +116,8 @@
          :unmount #() #_(slide-unmount-fn m) })
       (class! (->slide k :dom) :markdown)
       (set! (.-innerHTML (->slide k :cache))
-        (.toHTML js/markdown (or (:value m) s)))
-      (mapv #(set! (.-innerHTML %) (js/cljhtml (.-innerText %))) ($/find (->slide k :cache) "code"))
+        (slide-dsl (.toHTML js/markdown (or (:value m) s))))
+      (mapv #(set! (.-innerHTML %) (js/cljhtml (j/html-decode (.-innerHTML %)))) ($/find (->slide k :cache) "code"))
       (.appendChild (->slide k :dom) (first ($ (str "<h1>" (or (:name m)(:md m)) "</h1>"))))
       (mount [k m]))
     (:slideshow m)
@@ -217,7 +224,7 @@
 
 (def keymap {
   37 :left 39 :right 40 :up 38 :down 
-  33 :- 34 :+ 
+  33 :- 34 :+ 13 :+ 27 :-
   107 :z+ 109 :z-
   32 :space})
 
@@ -233,58 +240,83 @@
 
 (defn markdown-map [s]
   (apply merge (map (fn [m] {(last (butlast m)) (last m)}) 
-    (re-seq #"(\¶[ \t]*([^\r\n]+)[\r\n]*([^\¶]+))" s))))
+    (re-seq #"([\r\n \t]*¶[ \t]*([^\r\n]+)[\r\n]*([^¶]+))" 
+      s))))
 
 (defn init []
   (prn 'on-js-reload)
-  (j/ajax "data/markdown.html" 
+  (js/request "data/markdown.html" 
     (fn [s]     
+      (prn "loaded markdown" s (keys (markdown-map s)))
       (swap! state assoc :markdown (markdown-map s))
       (swap! state assoc :deck DECK)
       (swap! state assoc :graph {})
       ($/detach ($ "slide"))
       (populate!)
-      (navigate! :?)) 
-    #(.error js/console %)))
-
+      (navigate! :?))))
 
 
 (def DECK [
-  [{:md "title"}]
-[{:md "tween"}
- {:md "tween1" :zoom 0.8}
- {:md "tween2"}
- {:code "code/tween_core.clj"}
- ]
-[{:md "arcadia"}
-{:md "arcadia2"}
-{:code "code/show.clj"}
-{:code "code/hard_core.clj"}
-{:slideshow "arcadia.json"}]
+[ {:md "title"}
+  {:md "why-clojure"}]
 
-[{ :value "#dual-snake" :md "ec.md"}
-  { :img "data/html/gifs/1.gif"}
-  { :value "#wacky-waving" :md "ec.md"}
+[ {:md "onlyone"}
+  {:code "code/onlyone/data.cljs"}]
+
+[ {:md "libgdx" :zoom 0.8}
+  {:md "libgdx2" :zoom 0.8}
+  {:md "libgdx-games"}]
+
+
+[ {:md "arcadia"}
+  {:md "arcadia2"}
+  {:slideshow "arcadia.json"}
+  {:code "code/hard_core.clj"}]
+
+[{:md "parade-route" :zoom 0.8}]
+
+[ {:md "tween" :zoom 1}
+  {:md "tween1" :zoom 0.9}
+  {:md "tween2" :zoom 1}
+  {:code "code/tween_core.clj"}]
+
+[ {:md "dual-snake" :zoom 0.7}
+  {:md "dual-snake2" :zoom 1.2}
+  {:code "code/dual-snake.clj"}]
+
+[ { :value "#wacky-waving" :md "ec.md"}
   { :value "#night-farm" :md "ec.md"}
-  { :value "#wacky-waving" :md "ec.md"}
   {:value "#lonely-dungeon" :md "ec.md"}]
 
-[{:md "ec.md"}]
+[ {:md "squid"}
+  {:md "squid2" :zoom 0.8}
+  {:md "squid3"}]
 
-[{:value "#An Evening of Modern Dance" :md "ec.md"}]
+[ {:md "ec"}
+  {:md "ec2" :zoom 0.8}]
 
-[{:md "predicate"}
- {:img "data/img/inform.png"}
- {:md "mud"}
+[ {:md "modern-dance"}
+  {:md "modern-dance2"}]
 
-  {:code "code/pdfn_core.clj"}
-  {:md "pdfn2.md"}]
+[ {:md "predicate"}
+  {:img "data/img/inform.png"}
+  {:md "mud"}
+  {:md "pdfn1"}
+  {:md "pdfn3"}
+  {:md "pdfn2"}
+  {:code "code/pdfn_core.clj"}]
 
 [{:slideshow "monster.json"}]
 
-[ {:value "#infinity-coaster" :md "ec.md" :name "infinity-coaster"}
+[ {:md "infinity-coaster" :zoom 0.7}
+  {:md "infinity-coaster2"}
   {:slideshow "makehuman.json"}
-  {:slideshow "world.json"}]])
+  {:slideshow "world.json"}]
+
+[ {:md "the-dims"}
+  {:code "code/the-dims/data.clj"}
+  {:code "code/the-dims/play.clj"}]
+  ])
 
 
 (init)
