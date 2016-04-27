@@ -16,8 +16,6 @@
 (defn sshuffle [col]
   (sort-by (fn [_](srand)) col))
 
-
-
 (defn srand-vec [& more]
   (mapv (fn [col]
     (cond (number? col) (srand col)
@@ -28,8 +26,6 @@
       2 (+ (srand (apply - (reverse col))) (first col))
       (srand)
     :else (srand)))) more))
-
-
 
 ;https://gist.github.com/nasser/de0ddaead927dfa5261b
 (defmacro schance [& body]
@@ -51,19 +47,6 @@
     `(let [~rsym (srand)]
        (cond ~@clauses))))
 
-
-
-
-;TODO make noise configurable for user needs
-;'(* (noise (V* location 0.001)) 100)
-
-;'(noise :terrain {:in #(* 0.001) :out #(* % 100)})
-;'(noise :terrain location)
-
-;TODO consider combinations of noise lookups 
-;'(def abc (apply juxt (map partial (repeat 3 noise) [:a :b :c])))
-
-
 (def ^:private PN (atom {}))
 (def ^:private PFN (atom {}))
 
@@ -83,3 +66,11 @@
     (if-let [pfn (get @PFN k)]
       (.Noise pn (float (pfn x)) (float (pfn y)) (float (pfn z)))
       (.Noise pn (float x) (float y) (float z))))))
+
+;TODO make noise configurable for user needs
+'(* (noise (V* location 0.001)) 100)
+'(noise :terrain {:in #(* 0.001) :out #(* % 100)})
+'(noise :terrain location)
+
+;TODO consider combinations of noise lookups 
+'(def abc (apply juxt (map partial (repeat 3 noise) [:a :b :c])))

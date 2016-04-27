@@ -16,47 +16,82 @@
 
 # clojure is creative
 
-★50
+★30
 
-## rich core library 
+## rich core
 
-	(swap! VIEW (comp vec flatten (juxt rest first)))
-
-	(partition 3 (take 9 (cycle ["," "and"])))
+	(swap! view 
+	  (comp flatten 
+	    (juxt rest first)))
 
 	(->> entites
 	  (remove :dead)
 	  (map (juxt :x :y)))
 
-★/★50
+★/★24
 
-### macros
+## REPL 
 
+	(map 
+	  (constantly :tweak) 
+	    [every 
+	     part 
+	     of 
+	     your 
+	     game])
+
+
+
+★/★46
+
+## macros
+
+	(defmacro ∆ [x] 
+	  `(* Time/deltaTime ~x))
+	
 	(when (< (count (every apple)) 5)
 	  (place-apple 
 	    (v+ (->v3 (rand-nth (every block)))
 	        (->v3 0 1 0))))
 
-	(state []
-	  (either
-	    (mouse-move (ᓢ))
-	    (mouse-down (…))
-	    (mouse-move [x y]
-	      (⊞ + x))
-	    (mouse-up (ᓢ ⊞))))
+★/
 
-★/★50
+## data is a joy
 
-### data
+★30
 
-> no junk syntax, paredit/parinfer 
-  
-	;TODO reagent style    
-	'((/) rewrite css with ratoms)
-	  '((/) std interface styles)
-	  '((x) thi.ng/color #{:background :forground :active} 
-	        reacted into UI variations)
-	  '(( ) #{:alpha :contrast :saturation :layout-spacing})
+* easy to work with
+  * `get-in` `update-in`
+  * `(merge-with merge a b)`
+* easy to write
+  * no junk syntax (, ;)
+  * paredit | parinfer 
+
+
+
+★/★35
+
+	#{[{} '()]}
+	:k ::qk #"[^\n]*"
+	3/6 0xBADA55 1.2e-5
+
+    ::TODO 
+	'(( ) cache markdown map)
+	  '((/) finish intro)
+	  '((x) game builds)
+	  '(( ) publish slide deck)
+
+★/★35
+
+	{[1  0]  :e 
+	 [0 -1]  :s 
+	 [0  1]  :n  
+	 [-1 0]  :w}
+
+	{#{:n :s :w} \┤
+	 #{:n :s}    \│
+	 #{:n :e :w} \┴
+	 #{:n :e}    \└}
 
 ★/
 
@@ -203,11 +238,16 @@ mutation allows cyclical refs
 ★15★/
 
 ¶ec
-# ec.core 
+# `github.com/selfsame/ec`
 
 ## entity/component system for js|cljs
 
-> `github.com/selfsame/ec`
+# ![](./data/img/pong.gif) 
+
+¶ec1
+## mars base - collaboration w/ `@mills_dalton`
+
+# ![](./data/img/mars.gif) 
 
 ¶ec2
 
@@ -284,6 +324,35 @@ _________
 	              :fish))))))))
 ★/
 
+¶whale
+# sperm whale simulator
+
+# ![](./data/img/whale.gif) ![](./data/img/squid.gif)
+
+
+¶whale2
+# ![](./data/img/whale/tabfastic.jpg)
+
+# ![](./data/img/whale/whale-shots.jpg) 
+
+¶whale3
+# ![](./data/img/whale/predation.jpg)
+
+# ![](./data/img/whale/boid.gif)
+
+
+¶wacky
+# wacky waving inflatable tube guys
+
+# ![](./data/img/wacky/wacky1.gif)
+
+# ![](./data/img/wacky/wacky2.gif)
+
+¶wacky2
+# wacky waving inflatable basketball
+
+# ![](./data/img/wacky/wacky3.gif)
+
 ¶dual-snake
 # dual-snake
 
@@ -308,10 +377,10 @@ _________
 ¶squid2
 # squid bikes?
 
-# ![](./data/img/squid/squid2.gif)  ![](./data/img/squid/squid1.gif)    
+# ![](./data/img/squid/bike.gif)  ![](./data/img/squid/squid1.gif)    
 
 ¶squid3
-## map force
+## mapping force to the tentacles
 
 ★25★/★50
 
@@ -320,6 +389,11 @@ _________
 ★/
 
 # ![](./data/img/squid/squid4.gif)   
+
+¶night-farm
+### night farm
+
+# ![](./data/img/night-farm.gif)
 
 ¶modern-dance
 #An Evening of Modern Dance
@@ -360,9 +434,23 @@ _________
 
 # ![](./data/img/coaster.png) 
 
-¶infinity-coaster2
+¶infinity-coaster1
+
+# npc tourists
 
 # ![](./data/img/ahhh2.png)
+
+¶infinity-coaster2
+
+# blend shapes 
+
+# ![](./data/img/proc3.gif) ![](./data/img/proc1.gif)
+
+¶infinity-coaster3
+
+# motion sickness
+
+# ![](./data/img/proc54.gif) ![](./data/img/proc53.gif)
 
 ¶parade-route
 # Parade Route
@@ -374,3 +462,7 @@ _________
 ### first Arcadia game
 
 # ![](./data/img/parade-route.png)
+
+¶monster
+
+# Ludum Dare 33 - 'monster'

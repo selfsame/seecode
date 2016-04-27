@@ -7,7 +7,8 @@
     [cognitect.transit :as transit]
     [hyper.js :as j][hyper.tools :as t]
     [dollar.bill :as $ :refer [$]]
-    [pdfn.core :refer [and* or* not* is*] :refer-macros [defpdfn pdfn inspect]])
+    [pdfn.core :refer [and* or* not* is*] :refer-macros [defpdfn pdfn inspect]]
+    [deck.data])
   (:import
     [goog.events EventType]))
 
@@ -45,9 +46,9 @@
 
 (defn slide-dsl [s]
   (string/replace
-    (string/replace s #"(★)([0-9]+)" 
+    (string/replace s #"(\★)([0-9]+)" 
       #(str "<div class='column' style='width:" (last %1) "%'>"))
-    #"(★)/" "</div>"))
+    #"(\★)/" "</div>"))
 
 (defn style! [el k v] (when el (aset (.-style el) (clj->js k) v)))
 
@@ -240,15 +241,14 @@
 
 (defn markdown-map [s]
   (apply merge (map (fn [m] {(last (butlast m)) (last m)}) 
-    (re-seq #"([\r\n \t]*¶[ \t]*([^\r\n]+)[\r\n]*([^¶]+))" 
+    (re-seq #"([\r\n \t]*\¶[ \t]*([^\r\n]+)[\r\n]*([^\¶]+))" 
       s))))
 
 (defn init []
   (prn 'on-js-reload)
   (js/request "data/markdown.html" 
     (fn [s]     
-      (prn "loaded markdown" s (keys (markdown-map s)))
-      (swap! state assoc :markdown (markdown-map s))
+      (swap! state assoc :markdown (or (markdown-map s) deck.data/markdown-map))
       (swap! state assoc :deck DECK)
       (swap! state assoc :graph {})
       ($/detach ($ "slide"))
@@ -267,13 +267,17 @@
   {:md "libgdx2" :zoom 0.8}
   {:md "libgdx-games"}]
 
-
 [ {:md "arcadia"}
   {:md "arcadia2"}
   {:slideshow "arcadia.json"}
   {:code "code/hard_core.clj"}]
 
-[{:md "parade-route" :zoom 0.8}]
+[	{:md "parade-route" :zoom 0.8}
+	{:code "code/parade.clj"}]
+
+[	{:md "whale"}
+	{:md "whale2"}
+	{:md "whale3"}]
 
 [ {:md "tween" :zoom 1}
   {:md "tween1" :zoom 0.9}
@@ -281,19 +285,24 @@
   {:code "code/tween_core.clj"}]
 
 [ {:md "dual-snake" :zoom 0.7}
-  {:md "dual-snake2" :zoom 1.2}
+  {:md "dual-snake2" :zoom 1}
   {:code "code/dual-snake.clj"}]
 
-[ { :value "#wacky-waving" :md "ec.md"}
-  { :value "#night-farm" :md "ec.md"}
-  {:value "#lonely-dungeon" :md "ec.md"}]
+[ {:md "wacky" :zoom 0.8}
+	{:md "wacky2"}]
 
-[ {:md "squid"}
+[	{:md "night-farm" :zoom 1.5}
+  {:slideshow "lonely.json"}]
+
+[ {:md "squid" :zoom 0.8}
   {:md "squid2" :zoom 0.8}
   {:md "squid3"}]
 
 [ {:md "ec"}
-  {:md "ec2" :zoom 0.8}]
+	{:code "code/pong.clj"}
+	{:md "ec1"}
+  {:img "data/img/ec-code.png"}
+  {:code "code/ec/core.cljs"}]
 
 [ {:md "modern-dance"}
   {:md "modern-dance2"}]
@@ -306,17 +315,20 @@
   {:md "pdfn2"}
   {:code "code/pdfn_core.clj"}]
 
-[{:slideshow "monster.json"}]
+[	{:md "monster"}
+	{:slideshow "monster.json"}]
 
 [ {:md "infinity-coaster" :zoom 0.7}
+	{:md "infinity-coaster1"}
   {:md "infinity-coaster2"}
-  {:slideshow "makehuman.json"}
-  {:slideshow "world.json"}]
+  {:slideshow "img/infinity-human.json"}
+  {:md "infinity-coaster3"}
+  {:slideshow "world.json"}
+  {:code "code/hard/seed.clj"}]
 
 [ {:md "the-dims"}
   {:code "code/the-dims/data.clj"}
-  {:code "code/the-dims/play.clj"}]
-  ])
+  {:code "code/the-dims/play.clj"}] ])
 
 
 (init)
